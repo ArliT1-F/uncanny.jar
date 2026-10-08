@@ -116,17 +116,17 @@ public final class HomeFingerprint {
         nbt.putInt("placements", this.placements);
         nbt.putInt("removals", this.removals);
         if (this.bedPosition != null) {
-            nbt.putLong("bed", BlockPos.asLong(this.bedPosition));
+            nbt.putLong("bed", this.bedPosition.asLong());
         }
         if (this.spawnPosition != null) {
-            nbt.putLong("spawn", BlockPos.asLong(this.spawnPosition));
+            nbt.putLong("spawn", this.spawnPosition.asLong());
         }
         if (this.firstSignificantItem != null) {
             nbt.putString("first_item", this.firstSignificantItem);
         }
         long[] deaths = new long[this.deathPositions.size()];
         for (int i = 0; i < deaths.length; i++) {
-            deaths[i] = BlockPos.asLong(this.deathPositions.get(i));
+            deaths[i] = this.deathPositions.get(i).asLong();
         }
         NbtUtil.writeLongArray(nbt, "deaths", deaths);
         return nbt;

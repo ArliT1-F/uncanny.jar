@@ -108,7 +108,7 @@ public class UncannyBookScreen extends Screen {
     }
 
     @Override
-    public boolean isPauseScreen() {
+    public boolean shouldPause() {
         // Reading must not pause the world. On a server it cannot pause anything
         // anyway, and a singleplayer pause here would feel like being protected.
         return false;

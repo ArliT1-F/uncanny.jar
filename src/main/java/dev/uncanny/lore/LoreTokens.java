@@ -33,7 +33,7 @@ public final class LoreTokens {
         }
         UncannyPlayerData data = state.player(player.getUuid());
         long days = player.getWorld().getTimeOfDay() / 24000L;
-        String worldTag = Integer.toHexString((int) (player.getWorld().getSeed() & 0xFFFFL)).toUpperCase(Locale.ROOT);
+        String worldTag = Integer.toHexString((int) (player.getServerWorld().getSeed() & 0xFFFFL)).toUpperCase(Locale.ROOT);
 
         return text
                 .replace("{PLAYER}", player.getName().getString())

@@ -5,11 +5,11 @@ import dev.uncanny.dimension.DimensionManager;
 import dev.uncanny.dimension.UncannyDimension;
 import dev.uncanny.util.RandomUtil;
 import dev.uncanny.util.SeedUtil;
+import dev.uncanny.util.SignUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
@@ -83,8 +83,7 @@ public final class NatureGenerator {
             world.setBlockState(at.up(), Blocks.OAK_SIGN.getDefaultState(), 3);
             if (world.getBlockEntity(at.up()) instanceof SignBlockEntity sign) {
                 String place = random.pick(java.util.List.of("HOME", "THE HALL", "OUT", "BACK"));
-                sign.setTextOnRow(0, Text.literal("<- " + place));
-                sign.setTextOnRow(1, Text.literal(place + " ->"));
+                SignUtil.setLines(sign, "<- " + place, place + " ->");
             }
         } else if (roll < 0.30) {
             // Identical trees. Same height, same shape, far apart.
@@ -142,7 +141,7 @@ public final class NatureGenerator {
                         "WE NEVER LEFT",
                         "SECOND BURIAL"
                 };
-                sign.setTextOnRow(0, Text.literal(options.get((int) Math.floorMod(seed, 4))));
+                SignUtil.setLines(sign, options[(int) Math.floorMod(seed, 4)]);
             }
         } else if (roll < 0.14) {
             // A structure that was never generated in the original world.

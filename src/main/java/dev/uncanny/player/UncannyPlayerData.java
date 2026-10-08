@@ -186,10 +186,10 @@ public final class UncannyPlayerData {
         nbt.putInt("anomalies", this.anomaliesSeen);
         nbt.putInt("majors", this.majorAnomaliesSeen);
         if (this.firstDeathPosition != null) {
-            nbt.putLong("first_death", BlockPos.asLong(this.firstDeathPosition));
+            nbt.putLong("first_death", this.firstDeathPosition.asLong());
         }
         if (this.firstSleepPosition != null) {
-            nbt.putLong("first_sleep", BlockPos.asLong(this.firstSleepPosition));
+            nbt.putLong("first_sleep", this.firstSleepPosition.asLong());
         }
         NbtCompound dims = new NbtCompound();
         for (Map.Entry<String, Long> entry : this.firstDimensionEntry.entrySet()) {

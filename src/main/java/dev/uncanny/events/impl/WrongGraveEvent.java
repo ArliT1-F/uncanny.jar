@@ -3,9 +3,9 @@ package dev.uncanny.events.impl;
 import dev.uncanny.events.EventContext;
 import dev.uncanny.events.EventCondition;
 import dev.uncanny.events.UncannyEvent;
+import dev.uncanny.util.SignUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -56,10 +56,7 @@ public class WrongGraveEvent extends UncannyEvent {
         // The name is the player's. The date is tomorrow's.
         long day = context.world.getTimeOfDay() / 24000L;
         if (context.world.getBlockEntity(sign) instanceof SignBlockEntity entity) {
-            entity.setTextOnRow(0, Text.literal(context.player.getName().getString()));
-            entity.setTextOnRow(1, Text.literal("DAY " + (day + 1)));
-            entity.setTextOnRow(2, Text.literal(""));
-            entity.setTextOnRow(3, Text.literal(""));
+            SignUtil.setLines(entity, context.player.getName().getString(), "DAY " + (day + 1), "", "");
         }
 
         context.data.markPos("grave", sign);

@@ -7,6 +7,7 @@ import dev.uncanny.dimension.UncannyDimension;
 import dev.uncanny.item.UncannyBlocks;
 import dev.uncanny.util.RandomUtil;
 import dev.uncanny.util.SeedUtil;
+import dev.uncanny.util.SignUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -132,7 +133,7 @@ public final class AbyssGenerator {
         world.setBlockState(sign, Blocks.OAK_WALL_SIGN.getDefaultState()
                 .with(net.minecraft.block.WallSignBlock.FACING, Direction.SOUTH), 3);
         if (world.getBlockEntity(sign) instanceof net.minecraft.block.entity.SignBlockEntity entity) {
-            entity.setTextOnRow(0, net.minecraft.text.Text.literal("ABYSS"));
+            SignUtil.setLines(entity, "ABYSS");
         }
 
         // The marker makes the doorway work.

@@ -1,6 +1,8 @@
 package dev.uncanny.rendering;
 
 import net.minecraft.client.render.DimensionEffects;
+import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * How a layer looks from the inside.
@@ -22,22 +24,31 @@ import net.minecraft.client.render.DimensionEffects;
 public class UncannyDimensionEffects extends DimensionEffects {
 
     private final float[] fogColor;
+    private final boolean thickFog;
 
     public UncannyDimensionEffects(float cloudsHeight, float red, float green, float blue, boolean darkened) {
         // alternateSkyColor=false, skyType=NONE (no sky, no sun, no moon),
         // brightenLighting=false, darkened as requested.
         super(cloudsHeight, false, SkyType.NONE, false, darkened);
         this.fogColor = new float[]{red, green, blue};
+        this.thickFog = darkened;
     }
 
     @Override
-    public float[] getFogColor(float sunAngle, float tickDelta) {
-        return this.fogColor;
+    public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
+        return new Vec3d(this.fogColor[0], this.fogColor[1], this.fogColor[2]);
     }
 
     @Override
-    public boolean isDarkened() {
-        return super.isDarkened();
+    public boolean useThickFog(int camX, int camY) {
+        return this.thickFog;
+    }
+
+    @Override
+    @Nullable
+    public float[] getFogColorOverride(float skyAngle, float tickDelta) {
+        // No sunrise or sunset band. The layers do not have a sun.
+        return null;
     }
 
     /** The Hall: cold grey, close fog. */

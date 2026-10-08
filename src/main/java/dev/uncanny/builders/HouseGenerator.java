@@ -7,6 +7,7 @@ import dev.uncanny.player.HomeFingerprint;
 import dev.uncanny.player.UncannyPlayerData;
 import dev.uncanny.util.RandomUtil;
 import dev.uncanny.util.SeedUtil;
+import dev.uncanny.util.SignUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
@@ -163,8 +164,7 @@ public final class HouseGenerator {
         world.setBlockState(origin.add(6, 1, 5), Blocks.OAK_SIGN.getDefaultState(), 3);
         if (world.getBlockEntity(origin.add(6, 1, 5))
                 instanceof net.minecraft.block.entity.SignBlockEntity sign) {
-            sign.setTextOnRow(0, Text.literal("||||||||||||||||"));
-            sign.setTextOnRow(1, Text.literal(""));
+            SignUtil.setLines(sign, "||||||||||||||||", "");
         }
     }
 

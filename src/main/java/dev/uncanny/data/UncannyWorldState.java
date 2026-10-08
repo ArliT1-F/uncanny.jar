@@ -89,7 +89,6 @@ public final class UncannyWorldState extends PersistentState {
     private final Map<UUID, UncannyPlayerData> players = new HashMap<>();
 
     public UncannyWorldState() {
-        super(ID);
         for (int i = 0; i < SEAL_COUNT; i++) {
             this.seals[i] = 100;
         }
@@ -352,14 +351,14 @@ public final class UncannyWorldState extends PersistentState {
         nbt.put("thresholds", doors);
 
         if (this.subject != null) {
-            nbt.putUUID("subject", this.subject);
+            nbt.putUuid("subject", this.subject);
         }
         if (this.ledgerPosition != null) {
-            nbt.putLong("ledger", BlockPos.asLong(this.ledgerPosition));
+            nbt.putLong("ledger", this.ledgerPosition.asLong());
         }
         nbt.putLong("eye_seed", this.eyeSeed);
         if (this.ringPosition != null) {
-            nbt.putLong("ring", BlockPos.asLong(this.ringPosition));
+            nbt.putLong("ring", this.ringPosition.asLong());
         }
         nbt.putBoolean("partition_built", this.partitionBuilt);
         nbt.putBoolean("observation_closed", this.observationClosed);

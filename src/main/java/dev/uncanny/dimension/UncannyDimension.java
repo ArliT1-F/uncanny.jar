@@ -83,12 +83,18 @@ public enum UncannyDimension {
     }
 
     public Identifier id() {
-        return new Identifier(this.path);
+        if (this == OVERWORLD) {
+            return new Identifier("minecraft", "overworld");
+        }
+        return Uncanny.id(this.path);
     }
 
     /** The key used to look the dimension up on a server. */
     public RegistryKey<World> key() {
-        return RegistryKey.of(RegistryKeys.DIMENSION, id());
+        if (this == OVERWORLD) {
+            return World.OVERWORLD;
+        }
+        return RegistryKey.of(RegistryKeys.WORLD, id());
     }
 
     public RegistryKey<net.minecraft.world.dimension.DimensionType> typeKey() {

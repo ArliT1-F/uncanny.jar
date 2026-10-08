@@ -3,9 +3,9 @@ package dev.uncanny.events.impl;
 import dev.uncanny.events.EventContext;
 import dev.uncanny.events.EventCondition;
 import dev.uncanny.events.UncannyEvent;
+import dev.uncanny.util.SignUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -50,9 +50,7 @@ public class WrongSignEvent extends UncannyEvent {
         context.world.setBlockState(pos, Blocks.OAK_SIGN.getDefaultState(), 3);
         if (context.world.getBlockEntity(pos) instanceof SignBlockEntity sign) {
             String[] lines = LINES.get(context.random().nextInt(LINES.size()));
-            for (int row = 0; row < 4; row++) {
-                sign.setTextOnRow(row, Text.literal(lines[row]));
-            }
+            SignUtil.setLines(sign, lines);
         }
         context.data.markClue("sign_appeared");
     }

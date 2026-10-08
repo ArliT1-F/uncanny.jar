@@ -114,7 +114,7 @@ public final class UncannyEventManager {
 
         long seed = SeedUtil.mix(player.getUuid().getMostSignificantBits(), tick);
         RandomUtil.UncannyRandom random = RandomUtil.of(seed);
-        EventContext context = new EventContext(server, player.getWorld(), player, state, data, tick, seed);
+        EventContext context = new EventContext(server, player.getServerWorld(), player, state, data, tick, seed);
 
         // Gather candidates first so the choice can be weighted.
         List<UncannyEvent> candidates = new ArrayList<>();

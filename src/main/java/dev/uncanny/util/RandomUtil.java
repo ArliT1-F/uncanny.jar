@@ -55,6 +55,11 @@ public final class RandomUtil {
             return (nextLong() >>> 11) * 0x1.0p-53;
         }
 
+        /** 0.0 (inclusive) to 1.0 (exclusive). */
+        public float nextFloat() {
+            return (float) nextDouble();
+        }
+
         public boolean chance(double probability) {
             return nextDouble() < probability;
         }

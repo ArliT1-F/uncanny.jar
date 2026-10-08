@@ -24,7 +24,7 @@ public class DistantFootstepEvent extends UncannyEvent {
 
     @Override
     protected void perform(EventContext context) {
-        UncannySounds.behind(context.player, 0.85F + context.random().nextDouble() * 0.2F);
+        UncannySounds.behind(context.player, 0.85F + context.random().nextFloat() * 0.2F);
         context.data.markClue("footstep_behind");
     }
 }

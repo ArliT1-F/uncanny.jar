@@ -13,7 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.GlassBlock;
-import net.minecraft.block.Material;
+import net.minecraft.block.MapColor;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -42,27 +42,27 @@ public final class UncannyBlocks {
     public static final IntProperty OPENED = SealPlateBlock.OPENED;
 
     public static final Block STARLIGHT = register("starlight", new StarlightBlock(
-            FabricBlockSettings.create(Material.GLASS)
+            FabricBlockSettings.create().mapColor(MapColor.CLEAR)
                     .noCollision()
                     .nonOpaque()
                     .luminance((BlockState state) -> state.get(StarlightBlock.LEVEL))
                     .sounds(BlockSoundGroup.GLASS)));
 
     public static final Block SEAL_PLATE = register("seal_plate", new SealPlateBlock(
-            FabricBlockSettings.create(Material.STONE)
+            FabricBlockSettings.create().mapColor(MapColor.STONE_GRAY)
                     .requiresTool()
                     .strength(3.0F, 9.0F)
                     .luminance((BlockState state) -> state.get(SealPlateBlock.OPENED) > 4 ? 4 : 0)
                     .sounds(BlockSoundGroup.DEEPSLATE)));
 
     public static final Block LEDGER = register("ledger", new LedgerBlock(
-            FabricBlockSettings.create(Material.WOOD)
+            FabricBlockSettings.create().mapColor(MapColor.OAK_TAN)
                     .strength(-1.0F, 3600000.0F)
                     .dropsNothing()
                     .sounds(BlockSoundGroup.WOOD)));
 
     public static final Block EYE_VENT = register("eye_vent", new EyeVentBlock(
-            FabricBlockSettings.create(Material.STONE)
+            FabricBlockSettings.create().mapColor(MapColor.STONE_GRAY)
                     .strength(1.5F, 6.0F)
                     .nonOpaque()
                     .sounds(BlockSoundGroup.STONE)));
@@ -73,7 +73,7 @@ public final class UncannyBlocks {
                     .sounds(BlockSoundGroup.GLASS)));
 
     public static final Block SURVEY_MARKER = register("survey_marker", new SurveyMarkerBlock(
-            FabricBlockSettings.create(Material.DECORATION)
+            FabricBlockSettings.create().mapColor(MapColor.CLEAR)
                     .noCollision()
                     .nonOpaque()
                     .dropsNothing()

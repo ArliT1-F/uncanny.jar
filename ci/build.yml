@@ -1,3 +1,9 @@
+# Copy this file to .github/workflows/build.yml to have it run on push.
+#
+# It is stored here rather than in .github/workflows because this branch is
+# pushed by an automation token that does not have permission to create workflow
+# files. Moving it into place is a one-time, human-made change.
+
 name: build
 
 on:

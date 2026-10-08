@@ -33,7 +33,8 @@ completeness, and `fabric.mod.json` entrypoints.
 Central or Fabric's maven repository, so `./gradlew build` cannot resolve
 `com.mojang:minecraft` or `fabric-api`. No `.class` files were produced here, and
 nothing has been run inside Minecraft. The first real build has to happen somewhere
-with network access - the GitHub Actions workflow does it on push.
+with network access. `ci/build.yml` is a ready-to-use GitHub Actions workflow for
+it; copy it into `.github/workflows/` to turn it on.
 
 ---
 

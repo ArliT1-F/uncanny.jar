@@ -248,7 +248,9 @@ resolve `com.mojang:minecraft` or `fabric-api`, and no `.class` files were produ
 The Minecraft and Fabric API call sites were written from the 1.20.1 Yarn mappings
 and reviewed, and the checker guards the mod's own internal consistency, but the
 first real build has to happen on a machine with network access. The
-`.github/workflows/build.yml` workflow runs it on push.
+[`ci/build.yml`](ci/build.yml) workflow runs it on push; copy it into
+`.github/workflows/` to enable it (it is stored outside `.github` because this
+branch is pushed by a token without workflow permissions).
 
 Also not verified: in-game behaviour. Nothing here has been run inside Minecraft.
 [docs/TESTING.md](docs/TESTING.md) is the checklist to work through on a real

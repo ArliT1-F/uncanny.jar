@@ -3,6 +3,7 @@ package dev.uncanny.events.impl;
 import dev.uncanny.events.EventContext;
 import dev.uncanny.events.EventCondition;
 import dev.uncanny.events.UncannyEvent;
+import dev.uncanny.util.SignUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -10,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
@@ -85,11 +85,8 @@ public class RoomThatRemembersEvent extends UncannyEvent {
         BlockPos sign = spot.add(3, y + 1, 5);
         context.world.setBlockState(sign, Blocks.OAK_SIGN.getDefaultState(), 3);
         if (context.world.getBlockEntity(sign) instanceof SignBlockEntity entity) {
-            String[] lines = {"OBSERVATION", context.data.entryLabel(),
-                    "ITEMS: " + (chests + torches + (context.data.sleepCount > 0 ? 1 : 0)), "ONGOING"};
-            for (int row = 0; row < 4; row++) {
-                entity.setTextOnRow(row, Text.literal(lines[row]));
-            }
+            SignUtil.setLines(entity, "OBSERVATION", context.data.entryLabel(),
+                    "ITEMS: " + (chests + torches + (context.data.sleepCount > 0 ? 1 : 0)), "ONGOING");
         }
 
         context.data.markPos("memory_room", spot);

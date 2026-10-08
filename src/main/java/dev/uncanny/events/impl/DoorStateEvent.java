@@ -4,9 +4,9 @@ import dev.uncanny.audio.UncannySounds;
 import dev.uncanny.events.EventContext;
 import dev.uncanny.events.EventCondition;
 import dev.uncanny.events.UncannyEvent;
+import net.minecraft.block.Block;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 /**
  * A door that was closed is open. Or the other way.
@@ -33,7 +33,7 @@ public class DoorStateEvent extends UncannyEvent {
         }
         var state = context.world.getBlockState(door);
         boolean open = state.get(DoorBlock.OPEN);
-        context.world.setBlockState(door, state.with(DoorBlock.OPEN, !open), World.NOTIFY_ALL);
+        context.world.setBlockState(door, state.with(DoorBlock.OPEN, !open), Block.NOTIFY_ALL);
 
         // The sound of a door that has already moved.
         UncannySounds.schedule(context.server, context.tick + 6, context.world, door,

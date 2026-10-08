@@ -5,6 +5,7 @@ import dev.uncanny.dimension.DimensionManager;
 import dev.uncanny.dimension.UncannyDimension;
 import dev.uncanny.util.PositionUtil;
 import dev.uncanny.util.RandomUtil;
+import dev.uncanny.util.SignUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -15,7 +16,6 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
@@ -289,10 +289,7 @@ public final class GenerationContext {
         BlockPos pos = pos(x, y, z);
         set(x, y, z, Blocks.OAK_SIGN.getDefaultState());
         if (this.world.getBlockEntity(pos) instanceof SignBlockEntity sign) {
-            for (int row = 0; row < 4; row++) {
-                String line = row < lines.length ? lines[row] : "";
-                sign.setTextOnRow(row, Text.literal(line));
-            }
+            SignUtil.setLines(sign, lines);
             return true;
         }
         return false;
@@ -303,10 +300,7 @@ public final class GenerationContext {
         BlockPos pos = pos(x, y, z);
         set(x, y, z, Blocks.OAK_WALL_SIGN.getDefaultState().with(WallSignBlock.FACING, facing));
         if (this.world.getBlockEntity(pos) instanceof SignBlockEntity sign) {
-            for (int row = 0; row < 4; row++) {
-                String line = row < lines.length ? lines[row] : "";
-                sign.setTextOnRow(row, Text.literal(line));
-            }
+            SignUtil.setLines(sign, lines);
             return true;
         }
         return false;

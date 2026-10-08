@@ -79,12 +79,14 @@ public final class AmbientManager {
 
         if (roll < config.silenceChance + 0.06) {
             BlockPos pos = client.player.getBlockPos().add(
-                    client.random.nextInt(17) - 8, 0, client.random.nextInt(17) - 8);
-            client.world.playSound(pos, SoundEvents.AMBIENT_CAVE, SoundCategory.AMBIENT, 0.15F, 0.3F, false);
+                    client.world.random.nextInt(17) - 8, 0, client.world.random.nextInt(17) - 8);
+            client.world.playSound(client.player, pos, SoundEvents.AMBIENT_CAVE.value(),
+                    SoundCategory.AMBIENT, 0.15F, 0.3F);
         } else if (roll < config.silenceChance + 0.09) {
             BlockPos pos = client.player.getBlockPos().add(
-                    client.random.nextInt(11) - 5, 0, client.random.nextInt(11) - 5);
-            client.world.playSound(pos, SoundEvents.BLOCK_WOOD_HIT, SoundCategory.AMBIENT, 0.25F, 0.6F, false);
+                    client.world.random.nextInt(11) - 5, 0, client.world.random.nextInt(11) - 5);
+            client.world.playSound(client.player, pos, SoundEvents.BLOCK_WOOD_HIT,
+                    SoundCategory.AMBIENT, 0.25F, 0.6F);
         }
     }
 

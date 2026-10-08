@@ -501,7 +501,7 @@ public final class HallTemplates {
 
         // The journal. This is what the player came for, whether they know it or not.
         ctx.chest(3, 1, 12, Direction.NORTH, chest -> {
-            var stack = new net.minecraft.item.ItemStack(net.minecraft.items.Items.WRITTEN_BOOK);
+            var stack = new net.minecraft.item.ItemStack(net.minecraft.item.Items.WRITTEN_BOOK);
             var nbt = stack.getOrCreateNbt();
             nbt.putString("title", AnchorManager.label(number));
             nbt.putString("author", "");

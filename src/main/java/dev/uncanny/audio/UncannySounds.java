@@ -101,7 +101,7 @@ public final class UncannySounds {
 
     /** Minecraft's own cave ambience, pitched down until it is almost a chord. */
     public static void wrongAmbience(World world, BlockPos pos) {
-        at(world, pos, SoundEvents.AMBIENT_CAVE, 0.4F, 0.35F);
+        at(world, pos, SoundEvents.AMBIENT_CAVE.value(), 0.4F, 0.35F);
     }
 
     /** Breathing that is not attached to anything. */

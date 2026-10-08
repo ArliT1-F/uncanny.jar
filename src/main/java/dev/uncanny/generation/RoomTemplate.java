@@ -178,12 +178,16 @@ public final class RoomTemplate {
             return this;
         }
 
-        /** Accepts any pattern with exactly this many doorways. */
-        public Builder links(int count) {
+        /** Accepts any pattern whose doorway count is one of the given values. */
+        public Builder links(int... counts) {
+            java.util.Set<Integer> wanted = new java.util.HashSet<>();
+            for (int count : counts) {
+                wanted.add(count);
+            }
             int[] values = new int[16];
             int n = 0;
             for (int mask = 0; mask < 16; mask++) {
-                if (Integer.bitCount(mask) == count) {
+                if (wanted.contains(Integer.bitCount(mask))) {
                     values[n++] = mask;
                 }
             }

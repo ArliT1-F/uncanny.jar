@@ -111,8 +111,8 @@ public class UncannyMod implements ModInitializer {
         // CHUNK_LOAD gives us the finished chunk. We do not fill it here: we queue
         // it, and a couple are processed per tick, so entering a layer for the first
         // time never causes a stall.
-        ServerChunkEvents.CHUNK_LOAD.register((server, chunk) ->
-                ProceduralDimensionGenerator.onChunkLoaded(chunk.getWorld(), chunk));
+        ServerChunkEvents.CHUNK_LOAD.register((world, chunk) ->
+                ProceduralDimensionGenerator.onChunkLoaded(world, chunk));
 
         // ---- players ----
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->

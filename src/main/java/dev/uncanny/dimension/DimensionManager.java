@@ -37,7 +37,10 @@ public final class DimensionManager {
     private DimensionManager() {
     }
 
-    /** Called once from the server starting event. */
+    /**
+     * Called once, from SERVER_STARTED. Not SERVER_STARTING: the overworld is only
+     * created when the worlds load, which happens after SERVER_STARTING has fired.
+     */
     public static void initialise(MinecraftServer server) {
         long worldSeed = server.getOverworld().getSeed();
         SEEDS.clear();

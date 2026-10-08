@@ -87,11 +87,16 @@ public class UncannyMod implements ModInitializer {
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             ProceduralDimensionGenerator.reset();
+            DimensionManager.reset();
             UncannySounds.reset();
         });
 
         // ---- the tick ----
         ServerTickEvents.END_SERVER_TICK.register(server -> {
+            // Picks up a seeding that was deferred during startup. Cheap: one
+            // boolean read once the layers are seeded.
+            DimensionManager.tick(server);
+
             if (!UncannyConfig.get().enabled) {
                 return;
             }

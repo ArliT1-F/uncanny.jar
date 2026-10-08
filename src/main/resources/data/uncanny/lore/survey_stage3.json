@@ -1,0 +1,50 @@
+{
+  "records": [
+    {
+      "id": "room_18_three",
+      "title": "SURVEY NOTE 118 (AMENDED)",
+      "category": "SURVEY",
+      "stage": 3,
+      "weight": 6,
+      "pages": [
+        "ROOM 18 HAS NOW BEEN FOUND\nIN THREE DIFFERENT LOCATIONS.",
+        "ALL THREE ARE INTERIOR.\nALL THREE ARE FURNISHED.\nALL THREE ARE OCCUPIED."
+      ]
+    },
+    {
+      "id": "room_17",
+      "title": "SUBJECT 17, MOVEMENT",
+      "category": "SURVEY",
+      "stage": 3,
+      "weight": 5,
+      "pages": [
+        "SUBJECT ENTERED ROOM 17 AT 02:14.\nSUBJECT LEFT ROOM 17 AT 02:16.",
+        "SUBJECT REMAINED INSIDE\nROOM 17 UNTIL 02:31.",
+        "WE DO NOT KNOW WHO LEFT."
+      ]
+    },
+    {
+      "id": "window_note",
+      "title": "ON THE WINDOWS",
+      "category": "SURVEY",
+      "stage": 3,
+      "weight": 4,
+      "pages": [
+        "THE OBSERVATION WINDOWS\nOPEN ONTO NOTHING.",
+        "THIS IS BY DESIGN.\n\nIT WAS NOT BY DESIGN."
+      ]
+    },
+    {
+      "id": "partition_age",
+      "title": "ON THE AGE OF THE WORK",
+      "category": "SURVEY",
+      "stage": 3,
+      "weight": 5,
+      "pages": [
+        "WE DID NOT BUILD THE PARTITION.\nWE FOUND IT.",
+        "WE HAVE BEEN REPAIRING\nSOMETHING SOMEONE ELSE\nLEFT RUNNING.",
+        "THE REPAIRS ARE OURS.\nTHE WORK IS NOT."
+      ]
+    }
+  ]
+}

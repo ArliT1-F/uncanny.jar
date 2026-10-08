@@ -1,0 +1,56 @@
+{
+  "records": [
+    {
+      "id": "stars_behind",
+      "title": "ON THE LIGHTS",
+      "category": "ANCIENT",
+      "stage": 5,
+      "weight": 6,
+      "unique": true,
+      "pages": [
+        "THE STARS ARE NOT OUTSIDE\nTHE PARTITION.",
+        "THEY ARE BEHIND IT.",
+        "SEE ATTACHED PLATE.\n(PLATE MISSING)"
+      ]
+    },
+    {
+      "id": "prison_of_stars",
+      "title": "THE DEEP, FINAL DESCENT",
+      "category": "SURVEY",
+      "stage": 5,
+      "weight": 5,
+      "unique": true,
+      "pages": [
+        "BELOW THE LAST SHAFT\nTHERE IS NO FLOOR.",
+        "THERE ARE LIGHTS.\nSOME ARE STATIONARY.\nSOME ARE MOVING.",
+        "ONE OF THEM IS THIS WORLD.\nWE HAVE CONFIRMED THIS\nBY EXTINCTION.",
+        "WE DID NOT CONFIRM\nTHE OTHERS."
+      ]
+    },
+    {
+      "id": "approaching",
+      "title": "LIGHT 7",
+      "category": "SURVEY",
+      "stage": 5,
+      "weight": 4,
+      "pages": [
+        "LIGHT 7 IS CLOSER\nTHAN IT WAS.",
+        "MEASUREMENT IS UNRELIABLE.\nTHERE IS NOTHING TO MEASURE IT\nAGAINST.",
+        "NO ACTION TAKEN.\nNONE AVAILABLE."
+      ]
+    },
+    {
+      "id": "total_overlap",
+      "title": "ON PRESSURE",
+      "category": "SURVEY",
+      "stage": 5,
+      "weight": 5,
+      "unique": true,
+      "pages": [
+        "WE HAVE BEEN WRONG\nABOUT THE FAILURE.",
+        "THE EVENTS ARE NOT FAILURES.\nTHEY ARE RELEASES.",
+        "A SYSTEM THAT RELEASES\nIS A SYSTEM THAT IS HOLDING."
+      ]
+    }
+  ]
+}

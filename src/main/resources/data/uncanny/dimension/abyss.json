@@ -1,0 +1,17 @@
+{
+  "type": "uncanny:abyss",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        }
+      ],
+      "biome": "uncanny:abyss_biome",
+      "features": false,
+      "lakes": false
+    }
+  }
+}

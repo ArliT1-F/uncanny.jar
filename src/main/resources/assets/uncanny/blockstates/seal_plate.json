@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "opened=0": {
+      "model": "uncanny:block/seal_plate"
+    },
+    "opened=1": {
+      "model": "uncanny:block/seal_plate"
+    },
+    "opened=2": {
+      "model": "uncanny:block/seal_plate"
+    },
+    "opened=3": {
+      "model": "uncanny:block/seal_plate"
+    },
+    "opened=4": {
+      "model": "uncanny:block/seal_plate"
+    },
+    "opened=5": {
+      "model": "uncanny:block/seal_plate_open"
+    },
+    "opened=6": {
+      "model": "uncanny:block/seal_plate_open"
+    },
+    "opened=7": {
+      "model": "uncanny:block/seal_plate_open"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "records": [
+    {
+      "id": "thomas",
+      "title": "PERSONNEL DISCREPANCY",
+      "category": "SURVEY",
+      "stage": 4,
+      "weight": 6,
+      "unique": true,
+      "pages": [
+        "THOMAS DIED YESTERDAY.",
+        "THOMAS IS CURRENTLY\nIN ROOM 18.",
+        "BOTH STATEMENTS ARE SIGNED.\nNEITHER HAS BEEN WITHDRAWN."
+      ]
+    },
+    {
+      "id": "wrong_man",
+      "title": "REPORT 9",
+      "category": "SURVEY",
+      "stage": 4,
+      "weight": 5,
+      "unique": true,
+      "pages": [
+        "WE TRIED DESTROYING\nTHE PARTITION.\nIT REPAIRED ITSELF.",
+        "WE TRIED SEALING THE DOORS.\nTHE DOORS APPEARED ELSEWHERE.",
+        "WE TRIED SENDING A MAN THROUGH.\nHE RETURNED SIX HOURS LATER.",
+        "HE REMEMBERED EVERYTHING.\nHE REMEMBERED THE ACCIDENT.\nHE REMEMBERED THE BURIAL.",
+        "HE REMEMBERED US STANDING\nOVER HIS GRAVE.",
+        "WE BURIED THE WRONG MAN.",
+        "WE HAVE NOT DETERMINED\nWHICH ONE WAS WRONG."
+      ]
+    },
+    {
+      "id": "two_versions",
+      "title": "ON COPIES",
+      "category": "MEMO",
+      "stage": 4,
+      "weight": 4,
+      "pages": [
+        "A COPY IS NOT A DUPLICATE.\nA DUPLICATE IS MADE.",
+        "A COPY IS FOUND,\nALREADY THERE,\nWAITING TO BE NOTICED."
+      ]
+    },
+    {
+      "id": "memory_note",
+      "title": "ON MEMORY",
+      "category": "SURVEY",
+      "stage": 4,
+      "weight": 4,
+      "pages": [
+        "SUBJECTS WHO RETURN\nREMEMBER BOTH VERSIONS.",
+        "THEY DO NOT PREFER ONE.\nTHEY DO NOT NOTICE."
+      ]
+    }
+  ]
+}

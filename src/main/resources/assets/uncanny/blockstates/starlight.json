@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=1": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=2": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=3": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=4": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=5": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=6": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=7": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=8": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=9": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=10": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=11": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=12": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=13": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=14": {
+      "model": "uncanny:block/starlight"
+    },
+    "level=15": {
+      "model": "uncanny:block/starlight"
+    }
+  }
+}

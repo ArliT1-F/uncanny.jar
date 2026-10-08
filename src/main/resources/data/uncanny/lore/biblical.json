@@ -1,0 +1,66 @@
+{
+  "records": [
+    {
+      "id": "older_accounts",
+      "title": "COMPARATIVE TEXTS",
+      "category": "ANCIENT",
+      "stage": 6,
+      "weight": 6,
+      "unique": true,
+      "pages": [
+        "THE OLDER ACCOUNTS DESCRIBE\nWHEELS WITHIN WHEELS,",
+        "AND RIMS FULL OF EYES,",
+        "AND MOVEMENT IN FOUR\nDIRECTIONS WITHOUT TURNING.",
+        "RING CHAMBER 3 MATCHES.\nRING CHAMBER 3 PREDATES\nTHE ACCOUNTS."
+      ]
+    },
+    {
+      "id": "seven",
+      "title": "ON THE NUMBER",
+      "category": "ANCIENT",
+      "stage": 6,
+      "weight": 5,
+      "pages": [
+        "SEVEN BOUNDARIES.\nSEVEN RELEASES.",
+        "THE OLDER ACCOUNTS ALSO\nCOUNT TO SEVEN.",
+        "WE HAVE NOT DECIDED\nWHICH CAME FIRST."
+      ]
+    },
+    {
+      "id": "abyss_account",
+      "title": "THE EMPTY PLACE",
+      "category": "ANCIENT",
+      "stage": 6,
+      "weight": 5,
+      "unique": true,
+      "pages": [
+        "AN OLDER ACCOUNT DESCRIBES\nA PLACE WHERE THE HOSTS\nWERE KEPT,",
+        "AND A FIRE THAT EXTENDED\nBEYOND SEEING,",
+        "AND NOTHING ELSE IN IT.",
+        "WE HAVE BEEN THERE.\nTHERE WAS NO FIRE."
+      ]
+    },
+    {
+      "id": "watchers",
+      "title": "ON THE WATCHERS",
+      "category": "ANCIENT",
+      "stage": 6,
+      "weight": 4,
+      "pages": [
+        "THE ACCOUNTS SAY THEY WERE\nSET TO WATCH.",
+        "THE ACCOUNTS DO NOT SAY\nWHAT THEY WERE SET TO WATCH.\n\nWE HAVE STOPPED GUESSING."
+      ]
+    },
+    {
+      "id": "not_religion",
+      "title": "EDITORIAL NOTE",
+      "category": "MEMO",
+      "stage": 6,
+      "weight": 4,
+      "pages": [
+        "THIS IS NOT A CLAIM ABOUT\nANYONE'S FAITH.",
+        "IT IS A CLAIM THAT PEOPLE\nSTOOD WHERE WE ARE STANDING\nAND HAD NO WORDS FOR IT."
+      ]
+    }
+  ]
+}

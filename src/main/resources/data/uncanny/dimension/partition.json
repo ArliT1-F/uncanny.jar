@@ -1,0 +1,17 @@
+{
+  "type": "uncanny:partition",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        }
+      ],
+      "biome": "uncanny:partition_biome",
+      "features": false,
+      "lakes": false
+    }
+  }
+}

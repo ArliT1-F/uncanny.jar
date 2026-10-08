@@ -1,0 +1,47 @@
+{
+  "records": [
+    {
+      "id": "room_18_missing",
+      "title": "SURVEY NOTE 118",
+      "category": "SURVEY",
+      "stage": 2,
+      "weight": 6,
+      "pages": [
+        "ROOM 18 DOES NOT APPEAR\nON ANY MAP.",
+        "MEASURED AGAINST THREE\nSEPARATE SURVEYS.\nALL THREE ARE CORRECT."
+      ]
+    },
+    {
+      "id": "door_moved",
+      "title": "MAINTENANCE REPORT",
+      "category": "SURVEY",
+      "stage": 2,
+      "weight": 5,
+      "pages": [
+        "DOOR 6 WAS SEALED\nON THE 4TH.",
+        "DOOR 6 WAS FOUND OPEN\nON THE 5TH.\nTHE SEAL WAS INTACT."
+      ]
+    },
+    {
+      "id": "sound_note",
+      "title": "ACOUSTIC NOTE",
+      "category": "SURVEY",
+      "stage": 2,
+      "weight": 4,
+      "pages": [
+        "KNOCKING REPORTED IN\nSECTION 19, THREE NIGHTS\nRUNNING.",
+        "SECTION 19 IS SOLID.\n\nREPORT CLOSED."
+      ]
+    },
+    {
+      "id": "count_note",
+      "title": "COUNT",
+      "category": "SURVEY",
+      "stage": 2,
+      "weight": 4,
+      "pages": [
+        "OCCUPANTS: 41.\nBEDS: 41.\n\nCOUNT REPEATED AT 03:00.\nOCCUPANTS: 41.\nBEDS: 42."
+      ]
+    }
+  ]
+}

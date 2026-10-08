@@ -1,0 +1,17 @@
+{
+  "type": "uncanny:archive",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        }
+      ],
+      "biome": "uncanny:archive_biome",
+      "features": false,
+      "lakes": false
+    }
+  }
+}

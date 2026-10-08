@@ -245,12 +245,12 @@ injection-tested: a call to a method that does not exist, a call with the wrong
 argument count, and a syntax error each make it exit non-zero and name the file.
 
 The two passes that need tree-sitter (`pip install tree-sitter tree-sitter-java`)
-contribute 89 parsed files and 507 checked calls of that total. Without them the
+contribute 90 parsed files and 520 checked calls of that total. Without them the
 script still runs and says which passes it skipped, so a bare
 `python3 tools/check_project.py` cannot quietly look like the full run:
 
 ```
-OK    888 checks passed                          # with tree-sitter
+OK    903 checks passed                          # with tree-sitter
 OK    292 checks passed (skipped: java syntax, internal call arity)
 ```
 

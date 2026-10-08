@@ -34,15 +34,63 @@ public final class DimensionManager {
     /** path -> seed, filled in when the server starts. */
     private static final Map<String, Long> SEEDS = new HashMap<>();
 
+    /**
+     * True while the layers have not been seeded yet.
+     *
+     * Set when a seeding attempt happens before the worlds exist, so the work can
+     * be picked up on the next tick instead of being lost (or thrown away as an
+     * exception during startup).
+     */
+    private static boolean pending = true;
+
+    /** Guards the "no world yet" warning so it cannot spam the log, once per server. */
+    private static boolean warnedNoWorld = false;
+
     private DimensionManager() {
     }
 
     /**
-     * Called once, from SERVER_STARTED. Not SERVER_STARTING: the overworld is only
-     * created when the worlds load, which happens after SERVER_STARTING has fired.
+     * Works out the seed for every layer.
+     *
+     * Called from SERVER_STARTED, which is the first event that can see a world:
+     * the overworld is created inside setupServer(), so anything that fires before
+     * it (SERVER_STARTING, for one) still has {@code getOverworld() == null}, and
+     * asking that for a seed is what used to take the whole server down.
+     *
+     * It is safe to call from anywhere, including too early: if there is no
+     * overworld yet the seeding is deferred to the next {@link #tick}.
      */
     public static void initialise(MinecraftServer server) {
-        long worldSeed = server.getOverworld().getSeed();
+        ServerWorld overworld = server.getOverworld();
+        if (overworld == null) {
+            pending = true;
+            if (!warnedNoWorld) {
+                warnedNoWorld = true;
+                LOGGER.warn("[uncanny] no overworld yet, layer seeds deferred to the first tick");
+            }
+            return;
+        }
+        seedAll(overworld.getSeed());
+    }
+
+    /**
+     * Finishes a deferred seeding. Called from the server tick, before anything
+     * that asks for a seed, and does nothing at all once the seeds are in place.
+     */
+    public static void tick(MinecraftServer server) {
+        if (pending) {
+            initialise(server);
+        }
+    }
+
+    /** Forgets the seeds. Called when the server stops, so nothing leaks between worlds. */
+    public static void reset() {
+        SEEDS.clear();
+        pending = true;
+        warnedNoWorld = false;
+    }
+
+    private static void seedAll(long worldSeed) {
         SEEDS.clear();
         for (UncannyDimension dimension : UncannyDimension.values()) {
             if (dimension == UncannyDimension.OVERWORLD) {
@@ -51,21 +99,35 @@ public final class DimensionManager {
                 SEEDS.put(dimension.path(), SeedUtil.derive(worldSeed, "dim:" + dimension.path()));
             }
         }
-        LOGGER.debug("[uncanny] seeded {} layers from world seed", SEEDS.size());
+        pending = false;
+        LOGGER.debug("[uncanny] seeded {} layers from world seed {}", SEEDS.size(), worldSeed);
     }
 
-    /** The seed for one layer. Falls back to the world seed if called too early. */
+    /** The seed for one layer. Never throws, even if it is asked far too early. */
     public static long seedOf(UncannyDimension dimension, MinecraftServer server) {
-        Long seed = SEEDS.get(dimension.path());
-        if (seed != null) {
-            return seed;
-        }
-        return server.getOverworld().getSeed();
+        return seedOf(dimension.path(), server);
     }
 
     public static long seedOf(String path, MinecraftServer server) {
         Long seed = SEEDS.get(path);
-        return seed != null ? seed : server.getOverworld().getSeed();
+        if (seed != null) {
+            return seed;
+        }
+        // Not seeded yet (or the map was cleared). Fill it in on the spot rather
+        // than reaching for the overworld and hoping it is there.
+        initialise(server);
+        seed = SEEDS.get(path);
+        if (seed != null) {
+            return seed;
+        }
+        // Still nothing: there is no world at all, or this is not one of our
+        // layers. A stable per-path placeholder either way - a wrong seed is
+        // recoverable, a crash in the middle of startup is not.
+        if (!warnedNoWorld) {
+            warnedNoWorld = true;
+            LOGGER.warn("[uncanny] seed for '{}' asked for before any world exists, using a placeholder", path);
+        }
+        return SeedUtil.derive(0L, "dim:" + path);
     }
 
     /** The ServerWorld for a layer, or null if the datapack removed it. */

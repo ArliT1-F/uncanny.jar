@@ -202,6 +202,29 @@ loses atmosphere and nothing else.
 
 ---
 
+## Startup order
+
+The mod hooks three Fabric lifecycle events, and the order matters:
+
+| Event | Safe to touch | Used for |
+|---|---|---|
+| `SERVER_STARTING` | nothing world-shaped | writing the config |
+| `SERVER_STARTED` | everything | seeding the layers |
+| `SERVER_STOPPING` | everything, for the last time | clearing per-world caches |
+
+The overworld does not exist during `SERVER_STARTING`: it is created inside
+`setupServer()`, which runs after that event has fired. `MinecraftServer.getOverworld()`
+returns `null` there, so calling `.getSeed()` on it is a `NullPointerException` that
+kills the server before the world ever opens - which is exactly what crashed
+`DimensionManager.initialise()` on the first real run.
+
+The rule now: anything that wants a world waits for `SERVER_STARTED`.
+`DimensionManager` also defends itself - if `initialise()` is ever called early it
+marks the seeds pending and finishes them on the first tick, and `seedOf()` returns
+a stable placeholder instead of throwing. Startup bugs should be logged, not fatal.
+
+---
+
 ## Threading and cost
 
 Everything runs on the server thread. There are no worker threads, no scheduled

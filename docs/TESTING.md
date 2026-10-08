@@ -8,24 +8,24 @@ being written it caught four genuine bugs (an invalid hex literal, a class name 
 did not exist, a `void` method being assigned from, and `Blocks.BREAD`, which is an
 item and not a block).
 
-It currently passes 888 checks:
+It currently passes 903 checks:
 
 ```
-parsed 89 java files
-89 classes found
+parsed 90 java files
+90 classes found
 6 blocks, 9 items cross-referenced
 9 texture references checked
 8 dimensions cross-referenced
-507 internal calls checked against 101 classes
+520 internal calls checked against 102 classes
 0 bad assignments from void methods
 56 json files validated
 41 lore documents checked
 block name check across 34 known item-only names
 
-OK    888 checks passed
+OK    903 checks passed
 ```
 
-The count is 292 checks plus 89 parsed files plus 507 calls. The two tree-sitter
+The count is 293 checks plus 90 parsed files plus 520 calls. The two tree-sitter
 passes need `pip install tree-sitter tree-sitter-java`; without them the script still
 runs and says so, so a bare `python3 tools/check_project.py` cannot quietly look like
 the full run:

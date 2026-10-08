@@ -57,6 +57,8 @@ public final class SealManager {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 UncannyPlayerData data = state.player(player.getUuid());
                 data.markClue("seal_" + UncannyWorldState.sealName(index).toLowerCase());
+                // A boundary giving way is felt, quietly, by everyone present.
+                dev.uncanny.player.RealityInstability.raise(data, 0.015);
             }
             state.markDirty();
         }

@@ -276,6 +276,8 @@ public final class LoreManager {
         state.markWorldLore(loreId);
         if (fresh) {
             // Reading a document is a discovery, and discoveries move the stage.
+            // They also thin the player's reality, very slowly.
+            dev.uncanny.player.RealityInstability.raise(data, 0.004);
             state.markDirty();
         }
     }

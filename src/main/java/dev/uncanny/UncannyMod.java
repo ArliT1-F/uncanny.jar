@@ -89,6 +89,7 @@ public class UncannyMod implements ModInitializer {
             ProceduralDimensionGenerator.reset();
             DimensionManager.reset();
             UncannySounds.reset();
+            dev.uncanny.util.Scheduler.reset();
         });
 
         // ---- the tick ----
@@ -96,6 +97,10 @@ public class UncannyMod implements ModInitializer {
             // Picks up a seeding that was deferred during startup. Cheap: one
             // boolean read once the layers are seeded.
             DimensionManager.tick(server);
+
+            // Pending reverts always land, even if the mod was switched off
+            // between scheduling and firing them.
+            dev.uncanny.util.Scheduler.tick(server.getOverworld().getTime());
 
             if (!UncannyConfig.get().enabled) {
                 return;
@@ -150,7 +155,7 @@ public class UncannyMod implements ModInitializer {
         PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
             if (!world.isClient() && player instanceof ServerPlayerEntity serverPlayer
                     && world instanceof net.minecraft.server.world.ServerWorld serverWorld) {
-                PlayerActivityTracker.onBreakBlock(serverPlayer, serverWorld);
+                PlayerActivityTracker.onBreakBlock(serverPlayer, serverWorld, pos, state);
             }
         });
 

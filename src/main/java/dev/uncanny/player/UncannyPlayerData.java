@@ -105,6 +105,31 @@ public final class UncannyPlayerData {
     public long lastAnomalyTick = Long.MIN_VALUE;
     public long lastMajorAnomalyTick = Long.MIN_VALUE;
     public long lastLoudEventTick = Long.MIN_VALUE;
+    public long lastNearMissTick = Long.MIN_VALUE;
+
+    // ------------------------------------------------- hidden simulation state
+
+    /**
+     * Behavioural memory: where this player goes, what they build, how they
+     * play. Internal - never shown, never hinted at. See {@link PlayerMemory}.
+     */
+    public final PlayerMemory memory = PlayerMemory.newMemory();
+
+    /**
+     * Hidden reality instability, 0.0 .. 1.0. This number does not exist as far
+     * as the player is concerned. See {@link RealityInstability}.
+     */
+    public double realityInstability = 0.0;
+
+    /** The dimension path the player was last observed in. Feeds the Ledger. */
+    public String currentDimension = "minecraft:overworld";
+
+    /**
+     * The world tick of the last playtime accrual. Playtime only moves while the
+     * player is actually online: the gap across a disconnect is discarded by
+     * resetting this on join.
+     */
+    public long lastPlayAccrualTick = 0;
 
     // ------------------------------------------------------------ home data
 
@@ -166,7 +191,12 @@ public final class UncannyPlayerData {
     }
 
     public void enteredDimension(String dimensionPath, long tick) {
+        boolean firstTime = !this.firstDimensionEntry.containsKey(dimensionPath);
         this.firstDimensionEntry.putIfAbsent(dimensionPath, tick);
+        if (firstTime && !"minecraft:overworld".equals(dimensionPath)) {
+            // First contact with an overlapping layer. Small, slow, permanent.
+            RealityInstability.raise(this, 0.012);
+        }
     }
 
     public long totalDiscoveries() {
@@ -211,6 +241,11 @@ public final class UncannyPlayerData {
         nbt.putBoolean("observation_complete", this.observationComplete);
         nbt.putLong("last_anomaly", this.lastAnomalyTick == Long.MIN_VALUE ? Long.MIN_VALUE / 2 : this.lastAnomalyTick);
         nbt.putLong("last_major", this.lastMajorAnomalyTick == Long.MIN_VALUE ? Long.MIN_VALUE / 2 : this.lastMajorAnomalyTick);
+        nbt.putLong("last_near_miss", this.lastNearMissTick == Long.MIN_VALUE ? Long.MIN_VALUE / 2 : this.lastNearMissTick);
+        nbt.put("memory", this.memory.toNbt());
+        nbt.putDouble("instability", this.realityInstability);
+        nbt.putString("current_dim", this.currentDimension);
+        nbt.putLong("last_accrual", this.lastPlayAccrualTick);
         nbt.put("home", this.home.toNbt());
         return nbt;
     }
@@ -250,6 +285,26 @@ public final class UncannyPlayerData {
         long lastMajor = NbtUtil.readLong(nbt, "last_major", Long.MIN_VALUE / 2);
         data.lastAnomalyTick = lastAnomaly <= Long.MIN_VALUE / 2 + 1 ? Long.MIN_VALUE : lastAnomaly;
         data.lastMajorAnomalyTick = lastMajor <= Long.MIN_VALUE / 2 + 1 ? Long.MIN_VALUE : lastMajor;
+        long lastNearMiss = NbtUtil.readLong(nbt, "last_near_miss", Long.MIN_VALUE / 2);
+        data.lastNearMissTick = lastNearMiss <= Long.MIN_VALUE / 2 + 1 ? Long.MIN_VALUE : lastNearMiss;
+        if (nbt.contains("memory", net.minecraft.nbt.NbtElement.COMPOUND_TYPE)) {
+            PlayerMemory restored = PlayerMemory.fromNbt(nbt.getCompound("memory"));
+            data.memory.dimensionTicks.putAll(restored.dimensionTicks);
+            data.memory.dimensionVisits.putAll(restored.dimensionVisits);
+            data.memory.areaVisits.putAll(restored.areaVisits);
+            data.memory.doorUses.putAll(restored.doorUses);
+            data.memory.lastArea = restored.lastArea;
+            data.memory.lastDimension = restored.lastDimension;
+            data.memory.observedTicks = restored.observedTicks;
+            data.memory.undergroundTicks = restored.undergroundTicks;
+            data.memory.lastSleepTick = restored.lastSleepTick;
+            data.memory.recentRemovals.addAll(restored.recentRemovals);
+            data.memory.flags.addAll(restored.flags);
+        }
+        data.realityInstability = nbt.contains("instability", net.minecraft.nbt.NbtElement.DOUBLE_TYPE)
+                ? nbt.getDouble("instability") : 0.0;
+        data.currentDimension = NbtUtil.readString(nbt, "current_dim", "minecraft:overworld");
+        data.lastPlayAccrualTick = NbtUtil.readLong(nbt, "last_accrual", 0);
         if (nbt.contains("home", net.minecraft.nbt.NbtElement.COMPOUND_TYPE)) {
             HomeFingerprint home = HomeFingerprint.fromNbt(nbt.getCompound("home"));
             data.home.placedBlocks.putAll(home.placedBlocks);

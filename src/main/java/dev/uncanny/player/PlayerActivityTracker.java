@@ -3,6 +3,7 @@ package dev.uncanny.player;
 import dev.uncanny.data.UncannyWorldState;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -48,6 +49,12 @@ public final class PlayerActivityTracker {
         }
 
         BlockState state2 = world.getBlockState(pos);
+        if (state2.getBlock() instanceof DoorBlock) {
+            // Frequently used doors are behaviour the mod can lean on later:
+            // a door you live behind is a door an anomaly can afford to touch.
+            data.memory.noteDoorUse(pos);
+            state.markDirty();
+        }
         if (state2.getBlock() instanceof ChestBlock) {
             int items = 0;
             if (world.getBlockEntity(pos) instanceof net.minecraft.block.entity.ChestBlockEntity chest) {
@@ -63,14 +70,19 @@ public final class PlayerActivityTracker {
         }
     }
 
-    /** Called when a player breaks a block. */
-    public static void onBreakBlock(ServerPlayerEntity player, ServerWorld world) {
-        UncannyWorldState state = UncannyWorldState.get(world);
-        UncannyPlayerData data = state.player(player.getUuid());
+    /** Called when a player breaks a block. The position and block are kept for
+     * Reality Echoes: this is the only record of what the player actually did. */
+    public static void onBreakBlock(ServerPlayerEntity player, ServerWorld world,
+                                    BlockPos pos, BlockState state) {
+        UncannyWorldState worldState = UncannyWorldState.get(world);
+        UncannyPlayerData data = worldState.player(player.getUuid());
         data.home.recordRemoval();
-        // Breaking is common; only write to disk occasionally.
-        if (data.home.removals % 16 == 0) {
-            state.markDirty();
+        String blockId = net.minecraft.registry.Registries.BLOCK.getId(state.getBlock()).toString();
+        data.memory.noteRemoval(pos, blockId, world.getTime());
+        // Breaking is common; only write to disk occasionally. The ring fills
+        // after 16 breaks, so that is the first moment the record can change shape.
+        if (data.home.removals <= 16 || data.home.removals % 16 == 0) {
+            worldState.markDirty();
         }
     }
 

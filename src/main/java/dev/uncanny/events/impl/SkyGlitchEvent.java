@@ -16,6 +16,7 @@ public class SkyGlitchEvent extends UncannyEvent {
 
     public SkyGlitchEvent() {
         super("sky_glitch", Severity.NOTICED);
+        family(Family.DIMENSIONAL);
         when(EventCondition.and(
                 EventCondition.overworld(),
                 EventCondition.underOpenSky(),

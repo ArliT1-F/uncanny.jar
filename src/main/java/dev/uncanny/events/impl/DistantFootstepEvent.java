@@ -16,9 +16,11 @@ public class DistantFootstepEvent extends UncannyEvent {
 
     public DistantFootstepEvent() {
         super("distant_footstep", Severity.QUIET);
+        family(Family.AUDITORY);
         when(EventCondition.and(
                 EventCondition.playedMinutes(20),
-                EventCondition.not(EventCondition.raining())));
+                EventCondition.named("it is raining",
+                        EventCondition.not(EventCondition.raining()))));
         chance(0.25);
     }
 

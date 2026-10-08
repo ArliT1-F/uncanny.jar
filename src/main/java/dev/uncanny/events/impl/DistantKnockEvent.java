@@ -19,6 +19,7 @@ public class DistantKnockEvent extends UncannyEvent {
 
     public DistantKnockEvent() {
         super("distant_knock", Severity.NOTICED);
+        family(Family.AUDITORY);
         when(EventCondition.and(
                 EventCondition.playedMinutes(25),
                 EventCondition.or(EventCondition.underground(), EventCondition.inDimension(

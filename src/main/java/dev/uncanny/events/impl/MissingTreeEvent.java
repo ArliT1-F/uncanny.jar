@@ -1,6 +1,7 @@
 package dev.uncanny.events.impl;
 
 import dev.uncanny.audio.UncannySounds;
+import dev.uncanny.events.AnomalyChain;
 import dev.uncanny.events.EventContext;
 import dev.uncanny.events.EventCondition;
 import dev.uncanny.events.UncannyEvent;
@@ -15,8 +16,10 @@ import net.minecraft.util.math.BlockPos;
  * them will notice it happen. The log is removed, the leaves are left, and a
  * footstep is played somewhere out of sight a few seconds later.
  *
- * It is listed first in the design document's example for a reason: it is the
- * cheapest way to make a player stop trusting a place they have already been.
+ * It is the first stage of THE TREE chain: the position is remembered
+ * (missing_tree_pos) and the chain is marked, which makes the Ledger's canopy
+ * line and, much later, the tree's wrong return possible. None of that is
+ * guaranteed - the later stages keep their own conditions and rolls.
  */
 public class MissingTreeEvent extends UncannyEvent {
 
@@ -28,6 +31,7 @@ public class MissingTreeEvent extends UncannyEvent {
                 EventCondition.inForest(),
                 EventCondition.treeNearby(6)));
         chance(0.35);
+        advances(AnomalyChain.TREE);
     }
 
     @Override
@@ -40,6 +44,9 @@ public class MissingTreeEvent extends UncannyEvent {
         // that is easy to misremember, which is exactly what we want.
         PositionUtil.clearQuietly(context.world, tree);
         PositionUtil.setQuietly(context.world, tree, Blocks.AIR.getDefaultState());
+
+        // Remember where: this is what the chain's later stages come back to.
+        context.data.markPos("missing_tree_pos", tree);
 
         // Leave the leaves, then take the lowest layer a moment later.
         BlockPos leaves = tree.up(2);

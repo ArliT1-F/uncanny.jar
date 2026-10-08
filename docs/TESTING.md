@@ -8,7 +8,7 @@ being written it caught four genuine bugs (an invalid hex literal, a class name 
 did not exist, a `void` method being assigned from, and `Blocks.BREAD`, which is an
 item and not a block).
 
-It currently passes 292 checks:
+It currently passes 888 checks:
 
 ```
 parsed 89 java files
@@ -16,11 +16,34 @@ parsed 89 java files
 6 blocks, 9 items cross-referenced
 9 texture references checked
 8 dimensions cross-referenced
-503 internal calls checked against 101 classes
+507 internal calls checked against 101 classes
 0 bad assignments from void methods
 56 json files validated
 41 lore documents checked
 block name check across 34 known item-only names
+
+OK    888 checks passed
+```
+
+The count is 292 checks plus 89 parsed files plus 507 calls. The two tree-sitter
+passes need `pip install tree-sitter tree-sitter-java`; without them the script still
+runs and says so, so a bare `python3 tools/check_project.py` cannot quietly look like
+the full run:
+
+```
+WARN  tree_sitter is not installed; skipping the syntax pass (...)
+WARN  tree_sitter missing; skipping the call-arity pass
+OK    292 checks passed (skipped: java syntax, internal call arity)
+```
+
+The checker is injection-tested. Dropping in a call to a method that does not exist, a
+call with the wrong number of arguments, or a syntax error each produces an exit code
+of 1 and a line naming the file, so a clean run means the passes actually ran:
+
+```
+- call: ... calls StructureBits.noSuchMethod, which is not declared in StructureBits
+- call: ... calls StructureBits.tally with 4 args, declared with [5]
+- syntax: src/main/java/dev/uncanny/builders/HallTemplates.java:193:44
 ```
 
 Covered: syntax (real Java 17 grammar), internal imports, method existence and

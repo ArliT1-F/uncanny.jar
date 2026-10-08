@@ -230,7 +230,7 @@ Be precise about this, because it matters if you are about to run the mod.
 - all 89 Java files parse cleanly under a real Java 17 grammar;
 - every `import dev.uncanny.*` resolves to a file that exists;
 - every call into the mod's own classes uses a method that exists, with an argument
-  count matching a declared overload (503 calls checked);
+  count matching a declared overload (507 calls checked);
 - no assignment from a method that returns `void`;
 - every registered block and item has a blockstate, a model and a translation;
 - every model points at a texture that exists;
@@ -238,9 +238,21 @@ Be precise about this, because it matters if you are about to run the mod.
   effects identifier is registered in Java;
 - all 56 JSON files are valid; all 41 lore documents are complete and unique.
 
-That checker is not a stub of the build - it caught four real bugs while it was
-being written (an invalid hex literal, a class name that did not exist, a `void`
-method being assigned from, and `Blocks.BREAD`, which is an item).
+That checker is not a stub of the build. It caught four real bugs while it was being
+written (an invalid hex literal, a class name that did not exist, a `void` method
+being assigned from, and `Blocks.BREAD`, which is an item), and it is
+injection-tested: a call to a method that does not exist, a call with the wrong
+argument count, and a syntax error each make it exit non-zero and name the file.
+
+The two passes that need tree-sitter (`pip install tree-sitter tree-sitter-java`)
+contribute 89 parsed files and 507 checked calls of that total. Without them the
+script still runs and says which passes it skipped, so a bare
+`python3 tools/check_project.py` cannot quietly look like the full run:
+
+```
+OK    888 checks passed                          # with tree-sitter
+OK    292 checks passed (skipped: java syntax, internal call arity)
+```
 
 **Not verified here:** compilation against Minecraft itself. This sandbox has no
 route to Maven Central or Fabric's maven repository, so `./gradlew build` cannot

@@ -42,6 +42,15 @@ def check(name, condition, detail=""):
     return condition
 
 
+def counted(n):
+    """Adds n to the total for a pass that checks many things at once."""
+    global checks_run
+    checks_run += n
+
+
+skipped = []
+
+
 def java_files():
     for dirpath, _dirnames, filenames in os.walk(JAVA_ROOT):
         for filename in sorted(filenames):
@@ -66,6 +75,7 @@ def check_syntax():
     except ImportError:
         warnings.append("tree_sitter is not installed; skipping the syntax pass "
                         "(pip install tree-sitter tree-sitter-java)")
+        skipped.append("java syntax")
         return
     parser = Parser(Language(tsj.language()))
     parsed = 0
@@ -77,6 +87,7 @@ def check_syntax():
             bad = first_error(tree.root_node)
             failures.append(f"syntax: {rel(path)}:{bad[0]}:{bad[1]}")
     print(f"  parsed {parsed} java files")
+    counted(parsed)
 
 
 def first_error(node):
@@ -244,6 +255,7 @@ def check_static_calls():
         from tree_sitter import Language, Parser
     except ImportError:
         warnings.append("tree_sitter missing; skipping the call-arity pass")
+        skipped.append("internal call arity")
         return
 
     parser = Parser(Language(tsj.language()))
@@ -326,6 +338,7 @@ def check_static_calls():
 
         walk(tree.root_node)
     print(f"  {counter[0]} internal calls checked against {len(methods)} classes")
+    counted(counter[0])
 
 
 
@@ -474,12 +487,16 @@ def main():
     print()
     for warning in warnings:
         print("WARN  " + warning)
+    if skipped:
+        note = " (skipped: " + ", ".join(skipped) + ")"
+    else:
+        note = ""
     if failures:
-        print(f"FAIL  {len(failures)} problem(s) in {checks_run} checks:")
+        print(f"FAIL  {len(failures)} problem(s) in {checks_run} checks{note}:")
         for failure in failures:
             print("  - " + failure)
         return 1
-    print(f"OK    {checks_run} checks passed")
+    print(f"OK    {checks_run} checks passed{note}")
     return 0
 
 

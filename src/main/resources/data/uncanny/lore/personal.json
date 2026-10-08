@@ -1,0 +1,68 @@
+{
+  "records": [
+    {
+      "id": "new_subject",
+      "title": "NEW ENTRY",
+      "category": "PERSONAL",
+      "stage": 7,
+      "weight": 6,
+      "pages": [
+        "{PLAYER}",
+        "ENTRY {ENTRY}",
+        "FIRST OBSERVED: {DAY} DAYS\nAFTER OPENING.",
+        "NO ANOMALY DETECTED\nAT TIME OF ENTRY."
+      ]
+    },
+    {
+      "id": "subject_searching",
+      "title": "ON THE CURRENT SUBJECT",
+      "category": "PERSONAL",
+      "stage": 7,
+      "weight": 5,
+      "pages": [
+        "{PLAYER} HAS BEGUN\nSEARCHING.",
+        "{SEALS} BOUNDARIES HAVE\nRELEASED SINCE.",
+        "THE TWO FACTS ARE NOT\nBELIEVED TO BE RELATED."
+      ]
+    },
+    {
+      "id": "designation",
+      "title": "ON DESIGNATION",
+      "category": "PERSONAL",
+      "stage": 7,
+      "weight": 5,
+      "unique": true,
+      "pages": [
+        "AN ANCHOR DOES NOT NEED\nTO BE TAKEN.",
+        "INTERACTION IS SUFFICIENT.\nTHE SYSTEM DOES NOT DISTINGUISH\nBETWEEN FINDING AND ENTERING.",
+        "{ANCHOR} WAS DESIGNATED\nWITHOUT CONSULTATION."
+      ]
+    },
+    {
+      "id": "vacant",
+      "title": "ON THE LAST LINE",
+      "category": "PERSONAL",
+      "stage": 7,
+      "weight": 4,
+      "unique": true,
+      "pages": [
+        "WE HAVE ASKED WHAT\nVACANT MEANS.",
+        "THE DOCUMENT THAT DEFINES IT\nIS OLDER THAN THE QUESTION.",
+        "WE HAVE WRITTEN IT DOWN\n641 TIMES.\nIT HAS NEVER CHANGED."
+      ]
+    },
+    {
+      "id": "still_encountering",
+      "title": "CLOSING NOTE",
+      "category": "MEMO",
+      "stage": 7,
+      "weight": 3,
+      "unique": true,
+      "pages": [
+        "WE ASSUMED WE HAD\nENCOUNTERED SOMETHING NEW.",
+        "THE RECORDS SAY OTHERWISE.\nTHE RECORDS HAVE ALWAYS\nSAID OTHERWISE.",
+        "WE ARE NOT THE FIRST.\nWE MAY NOT BE THE LAST.\nWE MAY NOT BE FINISHED."
+      ]
+    }
+  ]
+}

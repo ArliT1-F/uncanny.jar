@@ -1,0 +1,17 @@
+{
+  "type": "uncanny:house",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        }
+      ],
+      "biome": "uncanny:house_biome",
+      "features": false,
+      "lakes": false
+    }
+  }
+}

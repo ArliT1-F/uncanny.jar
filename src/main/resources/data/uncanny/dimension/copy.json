@@ -1,0 +1,11 @@
+{
+  "type": "uncanny:copy",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "minecraft:overworld",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "uncanny:copy_biome"
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "records": [
+    {
+      "id": "boundary_stable",
+      "title": "BOUNDARY MEASUREMENT",
+      "category": "SURVEY",
+      "stage": 1,
+      "weight": 6,
+      "pages": [
+        "BOUNDARY 4-A\nDRIFT 0.02mm PER DAY\n\nWITHIN TOLERANCE.",
+        "NO ADJUSTMENT REQUIRED.\n\n- T. ASHEN"
+      ]
+    },
+    {
+      "id": "corridor_log",
+      "title": "CORRIDOR LOG",
+      "category": "SURVEY",
+      "stage": 1,
+      "weight": 6,
+      "pages": [
+        "SECTION 8, CORRIDOR 12.\nLAMP 4 REPLACED.\nLAMP 7 REMOVED.",
+        "LAMP 7 WAS NOT\nON THE INVENTORY.\n\nIT HAS BEEN LEFT OUT."
+      ]
+    },
+    {
+      "id": "station_routine",
+      "title": "STATION ROUTINE",
+      "category": "SURVEY",
+      "stage": 1,
+      "weight": 5,
+      "pages": [
+        "06:00 READINGS TAKEN.\n06:00 READINGS REPEATED.\nBOTH IDENTICAL.",
+        "NOTHING TO REPORT."
+      ]
+    },
+    {
+      "id": "supply_note",
+      "title": "SUPPLY NOTE",
+      "category": "SURVEY",
+      "stage": 1,
+      "weight": 4,
+      "pages": [
+        "REQUESTED: 12 LAMPS,\n40M WIRE, 1 CASE PAPER.",
+        "RECEIVED: 11 LAMPS,\n40M WIRE, 1 CASE PAPER.\n\nONE LAMP IS UNACCOUNTED FOR.\nNOT PURSUING."
+      ]
+    }
+  ]
+}

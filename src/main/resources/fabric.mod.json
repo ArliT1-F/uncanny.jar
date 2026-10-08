@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "uncanny",
+  "version": "${version}",
+  "name": "Uncanny",
+  "description": "A horror mod with no monsters in it. Overlapping realities, procedural dimensions, altered history, and a book that contains people.",
+  "authors": [
+    "uncanny.jar"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/uncanny/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.uncanny.UncannyMod"
+    ],
+    "client": [
+      "dev.uncanny.UncannyClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.22",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "fabric-api": "*"
+  },
+  "custom": {
+    "uncanny": {
+      "note": "No gameplay mods are required. No mixins are used. Everything the mod adds is either Java in dev.uncanny or data in data/uncanny."
+    }
+  }
+}

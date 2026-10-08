@@ -1,0 +1,75 @@
+{
+  "records": [
+    {
+      "id": "anchor_policy",
+      "title": "ANCHOR POLICY",
+      "category": "SURVEY",
+      "stage": 3,
+      "weight": 5,
+      "pages": [
+        "A BOUNDARY MAY BE STABILISED\nBY A PERSON.",
+        "THE PERSON MUST REMAIN.\nTHE PERSON MUST BE FED.",
+        "THE PERSON IS NOT A PRISONER.\n(TERM STRUCK)"
+      ]
+    },
+    {
+      "id": "anchor_041",
+      "title": "ANCHOR 041",
+      "category": "SURVEY",
+      "stage": 3,
+      "weight": 4,
+      "pages": [
+        "ANCHOR 041\nSTATUS: PRESENT\nTENURE: 1,412 DAYS",
+        "OCCUPANT DECLINES MEALS.\nOCCUPANT CONTINUES TO EAT."
+      ]
+    },
+    {
+      "id": "anchor_102",
+      "title": "ANCHOR 102",
+      "category": "SURVEY",
+      "stage": 4,
+      "weight": 4,
+      "pages": [
+        "ANCHOR 102\nSTATUS: ABSENT\nTENURE: 3,008 DAYS",
+        "ROOM IS LOCKED FROM INSIDE.\nROOM HAS BEEN LOCKED\nFROM INSIDE SINCE DAY 9."
+      ]
+    },
+    {
+      "id": "anchor_318",
+      "title": "ANCHOR 318",
+      "category": "SURVEY",
+      "stage": 4,
+      "weight": 4,
+      "pages": [
+        "ANCHOR 318\nSTATUS: UNRECORDED",
+        "NO OCCUPANT LISTED.\nBED IS WARM."
+      ]
+    },
+    {
+      "id": "anchor_740",
+      "title": "ANCHOR 740",
+      "category": "SURVEY",
+      "stage": 5,
+      "weight": 5,
+      "unique": true,
+      "pages": [
+        "ANCHOR 740\nSTATUS: DECEASED\nTENURE: 6,119 DAYS",
+        "FINAL ENTRY IS A KNOCK,\nRECORDED BY THE OCCUPANT,\nTHREE TIMES.",
+        "THE ROOM WAS EMPTY\nWHEN OPENED."
+      ]
+    },
+    {
+      "id": "anchor_next",
+      "title": "ANCHOR 741",
+      "category": "PERSONAL",
+      "stage": 7,
+      "weight": 6,
+      "unique": true,
+      "pages": [
+        "ANCHOR 741\nSTATUS: ACTIVE",
+        "NO INTAKE RECORDED.\nNO CONSENT RECORDED.\nNO ARRIVAL RECORDED.",
+        "SUBJECT: {PLAYER}"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "records": [
+    {
+      "id": "ledger_warning",
+      "title": "ON THE BOOK",
+      "category": "MEMO",
+      "stage": 2,
+      "weight": 5,
+      "pages": [
+        "DO NOT ATTEMPT TO OPEN\nTHE LEDGER."
+      ]
+    },
+    {
+      "id": "ledger_twelve",
+      "title": "ON THE BOOK (II)",
+      "category": "SURVEY",
+      "stage": 3,
+      "weight": 5,
+      "pages": [
+        "WE SPENT TWELVE YEARS\nTRYING.",
+        "IT DOES NOT CONTAIN\nINFORMATION.",
+        "IT CONTAINS PEOPLE."
+      ]
+    },
+    {
+      "id": "ledger_blank",
+      "title": "LEDGER, PHYSICAL DESCRIPTION",
+      "category": "SURVEY",
+      "stage": 3,
+      "weight": 4,
+      "pages": [
+        "EVERY PAGE IS BLANK.\nMEASURED WEIGHT IS CONSTANT.",
+        "WEIGHT DOES NOT CHANGE\nWHEN A SUBJECT DIES.\nWE EXPECTED IT WOULD."
+      ]
+    },
+    {
+      "id": "ledger_opens",
+      "title": "LEDGER, BEHAVIOUR",
+      "category": "SURVEY",
+      "stage": 6,
+      "weight": 5,
+      "unique": true,
+      "pages": [
+        "IT OPENS FOR THE PEOPLE\nIT CONTAINS.",
+        "IT HAS NEVER OPENED FOR US.\nWE ARE NOT IN IT."
+      ]
+    },
+    {
+      "id": "ledger_yours",
+      "title": "LEDGER, ENTRY {ENTRY}",
+      "category": "PERSONAL",
+      "stage": 7,
+      "weight": 6,
+      "unique": true,
+      "pages": [
+        "{ANCHOR}",
+        "FIRST PAGE: {PLAYER}",
+        "THE BOOK OPENED.\nWE WERE NOT PRESENT."
+      ]
+    }
+  ]
+}

@@ -72,9 +72,15 @@ public class UncannyMod implements ModInitializer {
         LoreManager.load();
 
         // ---- server lifecycle ----
+        // SERVER_STARTING fires before any world is loaded, so the overworld (which the
+        // layer seeds are derived from) does not exist yet. SERVER_STARTED fires once
+        // all worlds are live, so anything that reads a world belongs there.
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-            DimensionManager.initialise(server);
             UncannyConfig.get().save();
+        });
+
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            DimensionManager.initialise(server);
             LOGGER.info("[uncanny] {} room templates, {} lore documents, {} anomalies",
                     RoomTemplates.count(), LoreManager.size(), UncannyEventManager.count());
         });

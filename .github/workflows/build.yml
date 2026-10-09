@@ -13,16 +13,32 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
+          cache: gradle
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      # The build log cannot be downloaded from this sandbox (proxy), so any
+      # failure is re-emitted as an annotation, which the API can read.
       - name: Build
-        run: ./gradlew build --stacktrace
+        run: |
+          if ./gradlew build --stacktrace > build.log 2>&1; then
+            tail -n 30 build.log
+          else
+            tail -n 200 build.log
+            python3 - <<'PY'
+          import pathlib
+          text = pathlib.Path("build.log").read_text(errors="replace")
+          tail = text[-30000:]
+          esc = (tail.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))
+          print(f"::error title=Gradle build failed::{esc}")
+          PY
+            exit 1
+          fi
 
       - name: Upload jar
         uses: actions/upload-artifact@v4
@@ -43,17 +59,17 @@ jobs:
       - run: python3 tools/check_project.py
 
   server-smoke:
-    # Boots a dedicated server with the mod installed and greps the log for the
+    # Boots a dedicated server with the mod installed and checks the log for the
     # director's own startup lines. No player, no world interaction: this proves
     # registration, config load, tick wiring and the heartbeat, nothing more.
     # Player-dependent behaviour is checked by hand - see docs/TESTING.md.
+    # Independent of `build` so both surfaces report at the same time.
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
@@ -84,9 +100,24 @@ jobs:
           echo "---- log tail ----"
           tail -n 60 server.log
           echo "-------------------"
-          grep -q "anomalies registered" server.log
-          grep -q "event director active, checking every" server.log
-          grep -q "heartbeat: ok" server.log
+          missing=""
+          for want in "anomalies registered" "event director active, checking every" "heartbeat: ok"; do
+            if ! grep -q "$want" server.log; then
+              missing="$missing | $want"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            export MISSING="$missing"
+            python3 - <<'PY'
+          import os, pathlib
+          text = pathlib.Path("server.log").read_text(errors="replace")
+          tail = text[-30000:]
+          esc = (tail.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))
+          missing = os.environ.get("MISSING", "")
+          print(f"::error title=server smoke missing:{missing}::{esc}")
+          PY
+            exit 1
+          fi
 
       - name: Upload the server log
         if: always()

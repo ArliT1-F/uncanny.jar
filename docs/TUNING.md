@@ -13,18 +13,35 @@ Values shown are the defaults.
 | Key | Default | What it does |
 |---|---|---|
 | `enabled` | `true` | Turns the whole mod off. Dimensions still exist; nothing happens in them. |
-| `debugLogging` | `false` | Logs every generation decision and every anomaly that runs. Extremely chatty, very useful. |
+| `debugLogging` | `false` | Logs the director's full decision funnel (Player / Playtime / Stage / instability / Candidates / Eligible / Selected / Executed plus why each event was rejected) at the check interval, and every generation decision. Extremely chatty, very useful. |
+| `devForceCommands` | `false` | Development only. Unlocks `/uncanny force` and `/uncanny instability` (op level 2). Leave it off in normal play: with the flag off, nothing can shortcut the pacing system. |
 
 ## Pacing
 
 | Key | Default | What it does |
 |---|---|---|
-| `gracePeriodMinutes` | `12` | Nothing of any kind happens before this. |
+| `gracePeriodMinutes` | `12` | Nothing of any kind happens before this. Enforced once, centrally, by the director. |
 | `eventCheckIntervalTicks` | `40` | How often the director looks for something to do. 20 ticks = 1 second. |
 | `anomalyCooldownTicks` | `3600` | Shortest gap between two quiet anomalies for one player (3 minutes). |
 | `majorCooldownTicks` | `30000` | Shortest gap between major anomalies (25 minutes). |
+| `nearMissCooldownTicks` | `12000` | Shortest gap between near misses (10 minutes). Near misses have their own, longer gap so aborted attempts can never crowd out real anomalies. |
 | `anomalyFrequency` | `1.0` | Multiplies every probability. Also multiplies the chance of extra corridor links, so a busy world is also a more connected one. |
 | `silenceChance` | `0.04` | Chance per ambience check that the world goes quiet instead of making a sound. |
+
+## Reality instability
+
+The hidden 0.0-1.0 the world's wrongness scales with. Never shown, never a
+meter, never a jump scare: it decides which anomaly families are unlocked and
+how often anything may fire (quiet anomalies ~0.9x at 0.0 rising to ~1.1x at
+1.0; echoes 0.5x-1.5x; identity/ledger 0.7x-1.3x).
+
+| Key | Default | What it does |
+|---|---|---|
+| `realityInstabilityRate` | `1.0` | Multiplies every instability gain (lore +0.004, anchors +0.008, anomalies +0.003..0.02, seals +0.015, Ledger advances +0.006, revisits +0.004, layer entry +0.012). `0.5` makes the world forget twice as slowly; `0.0` freezes it for testing. |
+
+Instability only rises: there is no purchase, no decay, and no punishment for
+playing your way. A cautious player simply reaches the loud families later, if
+at all.
 
 ## Lore
 

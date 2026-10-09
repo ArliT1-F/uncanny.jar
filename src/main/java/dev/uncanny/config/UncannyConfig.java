@@ -30,6 +30,13 @@ public final class UncannyConfig {
     /** Prints what the event director is considering. Useful, but very chatty. */
     public boolean debugLogging = false;
 
+    /**
+     * Development only, and false by default: unlocks /uncanny force and
+     * /uncanny instability (which also need op level 2). Left off in normal
+     * play, no command can shortcut the pacing system.
+     */
+    public boolean devForceCommands = false;
+
     // ------------------------------------------------------------- pacing
 
     /** How often (in ticks) the event director looks for something to do. 20 = 1s. */

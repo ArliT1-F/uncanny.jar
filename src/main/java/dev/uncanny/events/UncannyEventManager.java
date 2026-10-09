@@ -126,6 +126,13 @@ public final class UncannyEventManager {
             }
         }
 
+        // A proof-of-life line for CI smoke runs and long servers: the director
+        // is alive even when nobody is online. Every 2.5 minutes, INFO.
+        if (tick > 0 && tick % 3000 == 0) {
+            LOGGER.info("[uncanny] heartbeat: ok ({} anomalies, every {} ticks)",
+                    EVENTS.size(), throttleInterval);
+        }
+
         if (WORLD_THROTTLE.ready(tick)) {
             SealManager.decay(server, state, tick);
         }

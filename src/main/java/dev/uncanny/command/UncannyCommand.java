@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import dev.uncanny.config.UncannyConfig;
 import dev.uncanny.data.UncannyWorldState;
 import dev.uncanny.dimension.DimensionManager;
 import dev.uncanny.dimension.UncannyDimension;
@@ -196,6 +197,11 @@ public final class UncannyCommand {
             return 0;
         }
         String id = StringArgumentType.getString(context, "event");
+        if (!UncannyConfig.get().devForceCommands) {
+            context.getSource().sendFeedback(() -> Text.literal(
+                    "devForceCommands is off in config/uncanny.json (leave it off)"), false);
+            return 0;
+        }
         dev.uncanny.events.UncannyEvent event = dev.uncanny.events.UncannyEventManager.find(id);
         if (event == null) {
             context.getSource().sendFeedback(() -> Text.literal("unknown event: " + id
@@ -224,6 +230,11 @@ public final class UncannyCommand {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null) {
             context.getSource().sendFeedback(() -> Text.literal("player only"), false);
+            return 0;
+        }
+        if (!UncannyConfig.get().devForceCommands) {
+            context.getSource().sendFeedback(() -> Text.literal(
+                    "devForceCommands is off in config/uncanny.json (leave it off)"), false);
             return 0;
         }
         int value = IntegerArgumentType.getInteger(context, "value");

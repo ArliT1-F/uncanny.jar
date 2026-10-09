@@ -37,7 +37,7 @@ public class RestoredBlockEvent extends UncannyEvent {
         when(EventCondition.and(
                 EventCondition.playedMinutes(40),
                 EventCondition.named("no broken block nearby",
-                        context -> findEcho(context) != null)));
+                        context -> findEcho(context) >= 0)));
         chance(0.12);
         fromInstability(0.12);
         advanced();

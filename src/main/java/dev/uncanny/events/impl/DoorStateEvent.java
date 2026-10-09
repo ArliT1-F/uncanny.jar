@@ -19,6 +19,7 @@ public class DoorStateEvent extends UncannyEvent {
 
     public DoorStateEvent() {
         super("door_state", Severity.QUIET);
+        family(Family.ARCHITECTURAL);
         when(EventCondition.and(
                 EventCondition.playedMinutes(10),
                 EventCondition.doorNearby(10)));

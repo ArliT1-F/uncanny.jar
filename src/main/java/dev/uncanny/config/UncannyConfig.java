@@ -30,6 +30,13 @@ public final class UncannyConfig {
     /** Prints what the event director is considering. Useful, but very chatty. */
     public boolean debugLogging = false;
 
+    /**
+     * Development only, and false by default: unlocks /uncanny force and
+     * /uncanny instability (which also need op level 2). Left off in normal
+     * play, no command can shortcut the pacing system.
+     */
+    public boolean devForceCommands = false;
+
     // ------------------------------------------------------------- pacing
 
     /** How often (in ticks) the event director looks for something to do. 20 = 1s. */
@@ -47,8 +54,24 @@ public final class UncannyConfig {
     /** Minutes of play before the first anomaly of any kind can happen. */
     public int gracePeriodMinutes = 12;
 
+    /**
+     * Shortest possible gap between two NEAR MISSES for one player, in ticks.
+     * Near misses are reality almost changing; they have their own, longer gap so
+     * they can never crowd out the real anomalies.
+     */
+    public int nearMissCooldownTicks = 20 * 60 * 10;
+
     /** Chance per check that ambience goes completely silent instead of playing. */
     public double silenceChance = 0.04;
+
+    // --------------------------------------------------- reality instability
+
+    /**
+     * Multiplies every gain of the hidden reality-instability value. 0.5 makes the
+     * world forget twice as slowly; 0.0 freezes instability entirely (useful for
+     * testing). Instability is never shown to the player.
+     */
+    public double realityInstabilityRate = 1.0;
 
     // ------------------------------------------------------------ lore
 

@@ -47,6 +47,7 @@ public final class DimensionTransitionManager {
         double fallStartY = 0;
         boolean falling = false;
         int ticksSinceTransition = 0;
+        int abortCooldownTicks = 0;
     }
 
     private static Transient transientFor(UUID uuid) {
@@ -138,9 +139,12 @@ public final class DimensionTransitionManager {
         if (sleeping && !t.wasSleeping) {
             UncannyPlayerData data = state.player(player.getUuid());
             data.sleepCount++;
+            data.memory.noteSleep(player.getServerWorld().getTime());
             if (data.firstSleepPosition == null) {
                 data.firstSleepPosition = player.getBlockPos().toImmutable();
             }
+            // The House is built from where the player actually sleeps.
+            data.home.bedPosition = player.getBlockPos().toImmutable();
             state.markDirty();
 
             if (config.allowSleepTransitions
@@ -183,10 +187,27 @@ public final class DimensionTransitionManager {
             return;
         }
         t.ticksUnderwater += CHECK_INTERVAL;
+        if (t.abortCooldownTicks > 0) {
+            t.abortCooldownTicks -= CHECK_INTERVAL;
+        }
+        UncannyPlayerData data = state.player(player.getUuid());
+        // A transition that begins and aborts: at four seconds - one second
+        // before anything real would happen - reality may start to move and then
+        // change its mind. Uncommon, long-cooldowned, and never before the grace
+        // period: nothing visible ever changes, the player is left with a question.
+        if (t.ticksUnderwater >= 20 * 4 && t.ticksUnderwater < 20 * 5
+                && t.abortCooldownTicks <= 0 && Math.random() < 0.12
+                && PlayerProgress.minutesPlayed(data) >= config.gracePeriodMinutes) {
+            t.ticksUnderwater = 0;
+            t.abortCooldownTicks = 20 * 60 * 15;
+            dev.uncanny.audio.UncannySounds.playTransition(player);
+            dev.uncanny.net.UncannyPayloads.sendVisual(player,
+                    dev.uncanny.net.UncannyPayloads.VISUAL_FLICKER, 0.4F);
+            return;
+        }
         if (t.ticksUnderwater < 20 * 5) {
             return;
         }
-        UncannyPlayerData data = state.player(player.getUuid());
         if (DimensionManager.current(player) != UncannyDimension.OVERWORLD) {
             t.ticksUnderwater = 0;
             return;

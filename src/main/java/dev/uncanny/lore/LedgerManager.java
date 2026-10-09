@@ -101,6 +101,9 @@ public final class LedgerManager {
             pages.add(List.of(entry, "SUBJECT IS AWARE", "OF THE RECORD."));
         }
 
+        // ---- FIELD LOG: what the subject actually did, in Surveyor voice ----
+        pages.addAll(LedgerEntryGenerator.fieldLog(data, state));
+
         pages.add(registerPage(state));
 
         if (data.ledgerState >= 3) {
@@ -154,6 +157,8 @@ public final class LedgerManager {
     /** Advances the Ledger one state. Returns the new state. */
     public static int advance(UncannyPlayerData data, UncannyWorldState state) {
         data.ledgerState = Math.min(5, data.ledgerState + 1);
+        // The Ledger noticing you thins things, quietly.
+        dev.uncanny.player.RealityInstability.raise(data, 0.006);
         if (data.ledgerState >= 3) {
             data.anchorStatus = data.ledgerState >= 5 ? AnchorManager.VACANT : AnchorManager.ACTIVE;
         }

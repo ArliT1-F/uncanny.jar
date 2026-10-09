@@ -25,6 +25,7 @@ public class ArchiveCallEvent extends UncannyEvent {
 
     public ArchiveCallEvent() {
         super("archive_call", Severity.NOTICED);
+        family(Family.DIMENSIONAL);
         when(EventCondition.and(
                 EventCondition.overworld(),
                 EventCondition.stage(5),

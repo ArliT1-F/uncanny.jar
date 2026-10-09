@@ -116,18 +116,32 @@ Some are one-way. None of them are announced.
 
 ## The event director
 
-`UncannyEventManager.tick` runs every 40 ticks:
+`UncannyEventManager.tick` runs every server tick but does almost nothing: a
+`Throttle` gates the real work to `eventCheckIntervalTicks` (default 40), so the
+cadence in the config is the cadence you get. One check:
 
 ```
 for each player:
-    context = EventContext(server, world, player, worldState, playerData, tick, seed)
-    candidates = [e for e in EVENTS if e.canRun(context, random)]
-    pick one, weighted by severity
-    run it, book the cooldown
+    accrue playtime + behavioural memory (one map write)
+    global grace period: before gracePeriodMinutes, stop here
+    context = EventContext(..., tick, seed)
+    for each event: evaluation = event.evaluate(context, random, explain)
+        NONE        -> candidate (eligible and passed its roll)
+        PROBABILITY -> eligible (failed only the roll)
+        anything else -> rejected, with a reason
+    pick one candidate, weighted:
+        severity x layer identity x this player's behaviour
+    chosen.run(context)   # books cooldowns, records the anomaly, raises instability
+    if debugLogging: print the whole funnel, once per check
 ```
 
-`UncannyEvent.canRun` checks, in order of cost: lore stage, one-time flag, cooldown,
-then conditions (the only part that touches the world), then probability.
+`evaluate()` checks in order of cost: stage, one-time flag, cooldown, chain
+preconditions, instability bounds, progression gates, conditions (the only part
+that touches the world), probability. Every rejection carries a detail string -
+`cooldown (41s left)`, `reality too stable (v < 0.10)`,
+`condition failed: not in forest` - so with `debugLogging` on, the log answers
+"why didn't X happen?" directly. Conditions are labeled with
+`EventCondition.named("reason", fn)`, which is what makes those strings human.
 
 Severity is the pacing mechanism:
 
@@ -140,10 +154,58 @@ Severity is the pacing mechanism:
 At most one anomaly per player per check. A player who has seen a lot gets
 progressively fewer, which is what stops the mod from becoming noise.
 
+### Families
+
+Every event declares a `Family` that gates *how* anomalies may escalate:
+`ENVIRONMENTAL` (the world slightly off), `ARCHITECTURAL` (structures moved),
+`FALSE_NORMALITY` (almost correct: extra stair, wrong wood, one wrong block),
+`AUDITORY` (sound and its absence), `ECHO` (the player's own actions coming
+back), `NEAR_MISS` (aborted attempts), `DIMENSIONAL` (layer identity),
+`MEMORY`, `LEDGER`, `IDENTITY` (reserved for high instability). Family filters
+in `PlayerBehavior.advancedFamilies` decide which families a player's
+instability and playtime have unlocked; a fresh player simply cannot roll an
+identity event.
+
+### Near misses and echoes
+
+- **Near misses** (`family NEAR_MISS`) have their own cooldown
+  own cooldown (`nearMissCooldownTicks`) and never raise instability or record
+  a location: a sound that stops, a door that almost changes, a structure that
+  flickers for six ticks. They are the mod practicing silence.
+- **Reality Echoes** fire only against *this player's* recorded actions: the
+  last 16 blocks they broke (restored when they return 8-48 blocks later, ≥10
+  minutes later), their dominant building material, their doors. They need
+  `instability ≥ 0.12-0.15` and a few dozen recorded actions, so they arrive
+  late and feel earned.
+
+### Anomaly chains
+
+`AnomalyChain` is progression via persistent flags, not a quest: each stage
+sets `the_tree:<stage>` in the player's memory, later stages declare
+`.after(chain, stage)` preconditions, and each stage keeps its own conditions
+and roll. A player who never saw `missing_tree` can never see `wrong_tree`, but
+one who saw it may simply never get the next roll - "not every player sees every
+stage" is the design, not a bug. Chain state is stored per player and is
+visible only to the director.
+
+### Dimension atmosphere
+
+`DimensionAtmosphereEvent` registers one behavioural rule per layer (cracked
+twins in the Hall, floating arrangements in the Woods, duplicated chests in the
+Copy, a record written for you in the Archive, fragments of other layers at
+boundaries). Each is: one bounded search when its gates pass, one to five block
+writes, nothing scheduled, nothing scanned per tick.
+
+### The scheduler
+
+`util/Scheduler` is a `TreeMap<Long, Runnable>` ticked from the server loop for
+timed writes (a door restored four ticks later, a sound played in a future
+tick). It holds at most 128 tasks; everything else is immediate.
+
 ### Conditions and actions
 
-`EventCondition` and `EventAction` are functional interfaces with static factories,
-so an event reads close to the design document's own notation:
+`EventCondition` is a functional interface with static factories, so an event
+reads close to the design document's own notation:
 
 ```java
 when(EventCondition.and(
@@ -153,8 +215,43 @@ when(EventCondition.and(
         EventCondition.night()));
 ```
 
-Every condition that searches does so inside a small bounded cube. Nothing in the mod
-scans a large area, and nothing scans every tick.
+Every condition that searches does so inside a small bounded cube. Nothing in
+the mod scans a large area, and nothing scans every tick.
+
+---
+
+## Player memory and instability
+
+Two hidden systems feed the director. Neither is ever shown to the player:
+there are no stat screens, no meters, no RPG vocabulary.
+
+`player/PlayerMemory` is a bounded record of behaviour: dimension visits and
+time, area revisit counts, door uses, structure finds, sleeps, underground
+ratio, build/break totals, the last 16 broken blocks, and the anomaly
+locations this player has caused. It accrues once per check from data the game
+already produced (position, dimension, a block callback) - never from world
+scans. It is persisted in the player's NBT with hard caps.
+
+`player/RealityInstability` is a hidden 0.0-1.0 that rises slowly and persists:
+lore reads (+0.004), entering an uncanny layer (+0.012), standing in an anchor
+(+0.008), sealing (+0.015 per seal), Ledger advances (+0.006), anomalies
+(+0.003..0.02 by severity, multiplied by `realityInstabilityRate`), revisiting
+an old anomaly spot (+0.004). It gates:
+
+- which families are unlocked at all (low = subtle only)
+- how often events may fire (`instabilityFactor`)
+- weighted preference for louder anomalies
+- the identity/ledger registers above 0.5-0.6
+
+It is never decremented by gameplay, never displayed, and never causes damage
+or jumpscares: it decides what *kind* of wrongness the world is capable of
+being.
+
+`player/PlayerBehavior` turns the memory into two numbers per event: a
+probability multiplier and a selection weight bias - so a player who builds a
+lot hears knocking, a player who lives behind doors gets door anomalies more
+often, and a player who never opens the Ledger keeps the book's late stages
+locked without ever being punished for it.
 
 ---
 
@@ -175,10 +272,16 @@ world state                      player state (per uuid)
   world-shared lore                ledger state, anchor status
                                    marks (positions to find again)
                                    home fingerprint
+                                   behaviour memory (bounded)
+                                   hidden instability (0.0-1.0)
+                                   chain stage flags
+                                   recent broken blocks (16)
 ```
 
 The home fingerprint is bounded on purpose: 24 block types, 8 containers, 6 death
 positions. It is filled from placement and break callbacks, not from scanning.
+Anomaly locations are capped at 128 globally, and every per-player collection
+has an explicit limit.
 
 `markDirty()` sets a flag; Minecraft writes the file when the world saves. Nothing
 here serialises on a tick.
@@ -234,9 +337,14 @@ Budget per tick, worst case:
 
 - 2 chunks filled (a few thousand block writes, the same order as vanilla
   decoration)
-- one event condition pass per player, at most every 2 seconds
+- one event check per player, at most every `eventCheckIntervalTicks` (default
+  2 seconds): bounded cube searches (≤ 11x6x11 reads) only for events whose
+  cheap gates already passed
+- one anchor-room probe every 4th check, in three layers only, capped at 9
+  signs found
 - one seal-decay check per minute
-- one star-brightening check per minute
-- one ring-chamber check per 2 seconds
+- one anomaly-location revisit compare per check (≤ 128 packed longs, no block
+  reads)
+- scheduler: at most 128 pending timed tasks
 
 Persistent data is written when the world saves. The config is read once and cached.

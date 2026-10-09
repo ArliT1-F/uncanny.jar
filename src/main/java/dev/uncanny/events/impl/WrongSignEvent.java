@@ -30,6 +30,7 @@ public class WrongSignEvent extends UncannyEvent {
 
     public WrongSignEvent() {
         super("wrong_sign", Severity.NOTICED);
+        family(Family.ARCHITECTURAL);
         when(EventCondition.and(
                 EventCondition.playedMinutes(18),
                 EventCondition.openGroundNearby(6)));

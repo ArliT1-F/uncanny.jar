@@ -14,39 +14,25 @@ import net.minecraft.util.math.Direction;
  * Nothing is taken and nothing is added. Rotation is the smallest possible change
  * that a player can verify, which makes it the most effective one: they know
  * exactly which way it was facing.
+ *
+ * If this is the chest a near miss already selected (see SelectedTargetEvent),
+ * the rotation is a full about-face instead of a quarter turn: an interrupted
+ * attempt, finishing later, on its own.
  */
 public class ChestMovedEvent extends UncannyEvent {
 
     public ChestMovedEvent() {
         super("chest_moved", Severity.NOTICED);
-        when(EventCondition.and(EventCondition.playedMinutes(20), ChestMovedEvent::chestNearby));
+        family(Family.ARCHITECTURAL);
+        when(EventCondition.and(
+                EventCondition.playedMinutes(20),
+                EventCondition.chestNearby(6)));
         chance(0.2);
-    }
-
-    /** Bounded search for a chest. Six blocks in each direction, once per check. */
-    private static boolean chestNearby(EventContext context) {
-        return findChest(context) != null;
-    }
-
-    private static BlockPos findChest(EventContext context) {
-        BlockPos centre = context.player.getBlockPos();
-        for (int dx = -6; dx <= 6; dx++) {
-            for (int dy = -3; dy <= 3; dy++) {
-                for (int dz = -6; dz <= 6; dz++) {
-                    BlockPos pos = centre.add(dx, dy, dz);
-                    BlockState state = context.world.getBlockState(pos);
-                    if (state.getBlock() instanceof ChestBlock) {
-                        return pos;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     @Override
     protected void perform(EventContext context) {
-        BlockPos chest = findChest(context);
+        BlockPos chest = EventCondition.findChest(context, 6);
         if (chest == null) {
             return;
         }
@@ -54,8 +40,14 @@ public class ChestMovedEvent extends UncannyEvent {
         if (!(state.getBlock() instanceof ChestBlock)) {
             return;
         }
+        boolean armed = chest.equals(context.data.markPos("near_miss_target"));
         Direction facing = state.get(ChestBlock.FACING);
         Direction turned = facing.rotateYClockwise();
+        if (armed) {
+            // The attempt that was selected but never happened.
+            turned = turned.rotateYClockwise();
+            context.data.markPos("near_miss_target", null);
+        }
         context.world.setBlockState(chest, state.with(ChestBlock.FACING, turned), 3);
         context.data.markClue("chest_rotated");
     }

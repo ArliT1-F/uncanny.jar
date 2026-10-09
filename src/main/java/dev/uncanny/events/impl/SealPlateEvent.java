@@ -22,6 +22,7 @@ public class SealPlateEvent extends UncannyEvent {
 
     public SealPlateEvent() {
         super("seal_plate", Severity.NOTICED);
+        family(Family.DIMENSIONAL);
         when(EventCondition.and(
                 EventCondition.or(
                         EventCondition.inDimension(UncannyDimension.HALL),

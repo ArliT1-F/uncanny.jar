@@ -31,6 +31,7 @@ public class RoomThatRemembersEvent extends UncannyEvent {
 
     public RoomThatRemembersEvent() {
         super("room_that_remembers", Severity.MAJOR);
+        family(Family.LEDGER);
         when(EventCondition.and(
                 EventCondition.playedMinutes(45),
                 EventCondition.stage(5)));

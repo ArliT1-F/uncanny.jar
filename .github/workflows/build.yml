@@ -1,0 +1,128 @@
+name: build
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # The build log cannot be downloaded from this sandbox (proxy), so any
+      # failure is re-emitted as an annotation, which the API can read.
+      - name: Build
+        run: |
+          if ./gradlew build --stacktrace > build.log 2>&1; then
+            tail -n 30 build.log
+          else
+            tail -n 200 build.log
+            python3 - <<'PY'
+          import pathlib
+          text = pathlib.Path("build.log").read_text(errors="replace")
+          tail = text[-30000:]
+          esc = (tail.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))
+          print(f"::error title=Gradle build failed::{esc}")
+          PY
+            exit 1
+          fi
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: uncanny
+          path: build/libs/*.jar
+
+  static-checks:
+    # Runs the dependency-free checks. These do not need Minecraft, so they work
+    # anywhere, including a fresh clone with no Gradle cache.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install tree-sitter tree-sitter-java
+      - run: python3 tools/check_project.py
+
+  server-smoke:
+    # Boots a dedicated server with the mod installed and checks the log for the
+    # director's own startup lines. No player, no world interaction: this proves
+    # registration, config load, tick wiring and the heartbeat, nothing more.
+    # Player-dependent behaviour is checked by hand - see docs/TESTING.md.
+    # Independent of `build` so both surfaces report at the same time.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Prepare a test server
+        run: |
+          mkdir -p run/config
+          echo "eula=true" > run/eula.txt
+          cat > run/config/uncanny.json <<'EOF'
+          {
+            "enabled": true,
+            "debugLogging": true,
+            "gracePeriodMinutes": 0,
+            "devForceCommands": true,
+            "eventCheckIntervalTicks": 40
+          }
+          EOF
+
+      - name: Run the server for 10 minutes
+        run: timeout 600 ./gradlew runServer --no-daemon > server.log 2>&1 || true
+
+      - name: Check the log
+        run: |
+          echo "---- log tail ----"
+          tail -n 60 server.log
+          echo "-------------------"
+          missing=""
+          for want in "anomalies registered" "event director active, checking every" "heartbeat: ok"; do
+            if ! grep -q "$want" server.log; then
+              missing="$missing | $want"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            export MISSING="$missing"
+            python3 - <<'PY'
+          import os, pathlib
+          text = pathlib.Path("server.log").read_text(errors="replace")
+          tail = text[-30000:]
+          esc = (tail.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))
+          missing = os.environ.get("MISSING", "")
+          print(f"::error title=server smoke missing:{missing}::{esc}")
+          PY
+            exit 1
+          fi
+
+      - name: Upload the server log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-log
+          path: server.log
+          if-no-files-found: ignore

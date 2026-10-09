@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import dev.uncanny.config.UncannyConfig;
 import dev.uncanny.data.UncannyWorldState;
 import dev.uncanny.dimension.DimensionManager;
 import dev.uncanny.dimension.UncannyDimension;
@@ -34,6 +35,13 @@ import net.minecraft.text.Text;
  *   /uncanny ledger            open the Ledger for yourself, as it is now
  *   /uncanny weaken <seal>     damage one seal immediately
  *   /uncanny templates         list the registered room templates
+ *   /uncanny evaluate          why each anomaly can or cannot run right now
+ *   /uncanny force <event>     run one anomaly immediately (testing only)
+ *   /uncanny instability <0-100>  set the hidden instability (testing only)
+ *
+ * The last three exist so the horror system can be balanced without waiting an
+ * hour for a roll. They are permission level 2: outside a test session, they
+ * do not exist.
  */
 public final class UncannyCommand {
 
@@ -54,7 +62,15 @@ public final class UncannyCommand {
                                 .executes(UncannyCommand::setStage)))
                 .then(CommandManager.literal("weaken")
                         .then(CommandManager.argument("seal", IntegerArgumentType.integer(1, 7))
-                                .executes(UncannyCommand::weaken))));
+                                .executes(UncannyCommand::weaken)))
+                .then(CommandManager.literal("evaluate")
+                        .executes(UncannyCommand::evaluate))
+                .then(CommandManager.literal("force")
+                        .then(CommandManager.argument("event", StringArgumentType.word())
+                                .executes(UncannyCommand::force)))
+                .then(CommandManager.literal("instability")
+                        .then(CommandManager.argument("value", IntegerArgumentType.integer(0, 100))
+                                .executes(UncannyCommand::instability))));
     }
 
     private static int status(CommandContext<ServerCommandSource> context) {
@@ -84,6 +100,12 @@ public final class UncannyCommand {
                         + ", queued chunks " + ProceduralDimensionGenerator.queued()
                         + ", templates " + RoomTemplates.count()
                         + ", documents " + LoreManager.size()), false);
+        context.getSource().sendFeedback(() -> Text.literal(String.format(java.util.Locale.ROOT,
+                "instability %.2f, underground %d%%, areas %d, doors %d, anomaly spots %d",
+                dev.uncanny.player.RealityInstability.value(data),
+                (int) (data.memory.undergroundRatio() * 100),
+                data.memory.areaVisits.size(), data.memory.doorUses.size(),
+                state.anomalyLocationCount())), false);
         return 1;
     }
 
@@ -143,6 +165,87 @@ public final class UncannyCommand {
         context.getSource().sendFeedback(() -> Text.literal(
                 "stage now " + PlayerProgress.stage(data, state).level()), false);
         return 1;
+    }
+
+    /**
+     * Why every anomaly can or cannot run right now. The balancing surface, on
+     * demand: grace period, stage, cooldowns, labeled conditions, probability.
+     */
+    private static int evaluate(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendFeedback(() -> Text.literal("player only"), false);
+            return 0;
+        }
+        UncannyWorldState state = UncannyWorldState.get(player.getServerWorld());
+        long tick = player.getServerWorld().getTime();
+        for (String line : dev.uncanny.events.UncannyEventManager.explain(player, state, tick)) {
+            context.getSource().sendFeedback(() -> Text.literal(line), false);
+        }
+        return 1;
+    }
+
+    /**
+     * Runs one anomaly immediately, bypassing every gate. Development only:
+     * permission level 2, never reachable in normal play, and it books the same
+     * cooldowns a real run would.
+     */
+    private static int force(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendFeedback(() -> Text.literal("player only"), false);
+            return 0;
+        }
+        String id = StringArgumentType.getString(context, "event");
+        if (!UncannyConfig.get().devForceCommands) {
+            context.getSource().sendFeedback(() -> Text.literal(
+                    "devForceCommands is off in config/uncanny.json (leave it off)"), false);
+            return 0;
+        }
+        dev.uncanny.events.UncannyEvent event = dev.uncanny.events.UncannyEventManager.find(id);
+        if (event == null) {
+            context.getSource().sendFeedback(() -> Text.literal("unknown event: " + id
+                    + " (try /uncanny templates or the ids in AllEvents)"), false);
+            return 0;
+        }
+        UncannyWorldState state = UncannyWorldState.get(player.getServerWorld());
+        long tick = player.getServerWorld().getTime();
+        long seed = dev.uncanny.util.SeedUtil.mix(player.getUuid().getMostSignificantBits(), tick, 0xF0CE);
+        dev.uncanny.events.EventContext eventContext = new dev.uncanny.events.EventContext(
+                player.getServer(), player.getServerWorld(), player, state,
+                state.player(player.getUuid()), tick, seed);
+        try {
+            event.run(eventContext);
+            context.getSource().sendFeedback(() -> Text.literal("ran " + id), false);
+            return 1;
+        } catch (RuntimeException e) {
+            context.getSource().sendFeedback(
+                    () -> Text.literal("failed: " + e.getMessage()), false);
+            return 0;
+        }
+    }
+
+    /** Sets the hidden instability (0-100 -> 0.0-1.0). Testing only. */
+    private static int instability(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendFeedback(() -> Text.literal("player only"), false);
+            return 0;
+        }
+        if (!UncannyConfig.get().devForceCommands) {
+            context.getSource().sendFeedback(() -> Text.literal(
+                    "devForceCommands is off in config/uncanny.json (leave it off)"), false);
+            return 0;
+        }
+        int value = IntegerArgumentType.getInteger(context, "value");
+        UncannyWorldState state = UncannyWorldState.get(player.getServerWorld());
+        UncannyPlayerData data = state.player(player.getUuid());
+        dev.uncanny.player.RealityInstability.set(data, value / 100.0);
+        state.markDirty();
+        String reply = String.format(java.util.Locale.ROOT, "instability now %.2f",
+                dev.uncanny.player.RealityInstability.value(data));
+        context.getSource().sendFeedback(() -> Text.literal(reply), false);
+        return value;
     }
 
     private static int weaken(CommandContext<ServerCommandSource> context) {

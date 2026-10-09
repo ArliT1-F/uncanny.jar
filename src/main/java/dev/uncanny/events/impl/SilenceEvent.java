@@ -17,6 +17,7 @@ public class SilenceEvent extends UncannyEvent {
 
     public SilenceEvent() {
         super("silence", Severity.QUIET);
+        family(Family.AUDITORY);
         when(EventCondition.playedMinutes(10));
         chance(0.4);
     }

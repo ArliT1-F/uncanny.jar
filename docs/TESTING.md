@@ -8,24 +8,24 @@ being written it caught four genuine bugs (an invalid hex literal, a class name 
 did not exist, a `void` method being assigned from, and `Blocks.BREAD`, which is an
 item and not a block).
 
-It currently passes 903 checks:
+It currently passes 1180 checks:
 
 ```
-parsed 90 java files
-90 classes found
+parsed 115 java files
+115 classes found
 6 blocks, 9 items cross-referenced
 9 texture references checked
 8 dimensions cross-referenced
-520 internal calls checked against 102 classes
+747 internal calls checked against 133 classes
 0 bad assignments from void methods
 56 json files validated
 41 lore documents checked
 block name check across 34 known item-only names
 
-OK    903 checks passed
+OK    1180 checks passed
 ```
 
-The count is 293 checks plus 90 parsed files plus 520 calls. The two tree-sitter
+The count is 293 checks plus 115 parsed files plus 747 calls. The two tree-sitter
 passes need `pip install tree-sitter tree-sitter-java`; without them the script still
 runs and says so, so a bare `python3 tools/check_project.py` cannot quietly look like
 the full run:
@@ -52,12 +52,76 @@ block/item/blockstate/model/texture/lang cross-references, dimension to dimensio
 type to biome references, client effects registration, JSON validity, lore
 completeness, and `fabric.mod.json` entrypoints.
 
-**Not covered:** compilation against Minecraft. This sandbox cannot reach Maven
-Central or Fabric's maven repository, so `./gradlew build` cannot resolve
-`com.mojang:minecraft` or `fabric-api`. No `.class` files were produced here, and
-nothing has been run inside Minecraft. The first real build has to happen somewhere
-with network access. `ci/build.yml` is a ready-to-use GitHub Actions workflow for
-it; copy it into `.github/workflows/` to turn it on.
+**Not covered locally:** compilation against Minecraft. This sandbox cannot reach
+Maven Central or Fabric's maven repository, so `./gradlew build` cannot resolve
+`com.mojang:minecraft` or `fabric-api`. The real build runs on GitHub Actions:
+`.github/workflows/build.yml` (copied from `ci/build.yml`) executes the gradle
+build plus this static checker on every push. If the workflow file is missing
+on a fresh branch, it is because pushing workflow files requires the
+`workflows` permission the automation token does not have - a human adds the
+file once via the GitHub web editor (Settings → the file lives at
+`.github/workflows/build.yml`), and everything after that is push-driven.
+
+---
+
+## The anomaly system, specifically
+
+### Dev-only commands (permission level 2)
+
+- `/uncanny evaluate` - prints `id -> detail` for every registered anomaly:
+  grace period, cooldowns, stage, instability bounds, labeled conditions,
+  probability. This is how you answer "why didn't X happen?" without waiting.
+  Read-only; always available to ops.
+- `/uncanny force <id>` - runs one anomaly immediately, booking the same
+  cooldowns a real run would.
+- `/uncanny instability <0-100>` - sets the hidden instability to 0.0-1.0.
+
+`force` and `instability` additionally require `devForceCommands: true` in
+`config/uncanny.json` (default **false**). With the flag off - normal play -
+no command can shortcut the pacing system. Turn it on only for a balancing
+session and turn it off again.
+
+### Verified by CI
+
+- [ ] `build` job compiles both source sets and runs gradle `check`
+- [ ] `static-checks` job passes the tree-sitter checker
+- [ ] server smoke: `runServer` starts with `--start-public --nogui`, a seeded
+      config (`enabled: true`, `debugLogging: true`, `gracePeriodMinutes: 0`),
+      the log contains `anomalies registered` and
+      `event director active, checking every N ticks`, and the run greps
+      `Uncanny heartbeat: ok` before shutting down cleanly
+
+### Verified by hand (needs a player)
+
+- [ ] first checks print the debug funnel: Player, Playtime, Stage, Reality
+      instability, Candidates, Eligible, Selected, Executed - and rejection
+      lines like `missing_tree -> condition failed: ...`, once per interval,
+      never per tick
+- [ ] with `gracePeriodMinutes: 5`, every check prints
+      `-> grace period (n of 5 minutes)` and nothing else happens; after 5
+      minutes anomalies become possible
+- [ ] `/uncanny force door_state` works and the cooldown afterwards shows in
+      `/uncanny evaluate`
+- [ ] changing `eventCheckIntervalTicks` in the config is picked up without a
+      restart (the log says `event check interval now every N ticks`)
+- [ ] playtime accrual: relogging does not advance the grace timer (time
+      offline does not count)
+- [ ] instability rises after reading Ledger pages, sealing, entering an
+      uncanny layer - and persists across restart (`/uncanny status`)
+- [ ] at instability 0.8 `/uncanny evaluate` shows identity/ledger events
+      losing their `reality too stable` rejection; at 0.0 they all have it
+- [ ] the TREE chain: `missing_tree` sets the stage; `wrong_tree` reports
+      `chain stage not reached` until both earlier stages are marked; after
+      forcing both, `wrong_tree` becomes eligible near the original site
+- [ ] a near miss does NOT raise instability and does NOT record an anomaly
+      location (check `/uncanny status` before/after)
+- [ ] an echo (`restored_block`) fires only on a block the player broke, only
+      when they come back, and only after the configured delay - and the
+      world has no echo spam: the same block is not restored twice
+- [ ] Anchor 741, the Ledger, seals, dimensions and existing lore all behave
+      as before this extension (the "Checklist for a real client" above still
+      passes in full)
+- [ ] `uncanny-force-test` off means no command can force a probability
 
 ---
 

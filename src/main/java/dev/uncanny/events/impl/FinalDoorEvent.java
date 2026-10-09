@@ -28,6 +28,7 @@ public class FinalDoorEvent extends UncannyEvent {
 
     public FinalDoorEvent() {
         super("final_door", Severity.MAJOR);
+        family(Family.DIMENSIONAL);
         when(EventCondition.and(
                 EventCondition.inDimension(UncannyDimension.PARTITION),
                 FinalDoorEvent::observationClosed));

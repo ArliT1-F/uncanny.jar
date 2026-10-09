@@ -12,9 +12,11 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -83,6 +85,61 @@ public final class UncannyWorldState extends PersistentState {
 
     /** Tick the world first noticed the mod, used for slow-burn pacing. */
     private long startedAtTick = 0;
+
+    // ----------------------------------------------------- anomaly locations
+
+    /**
+     * Places where an anomaly has happened, oldest first. Capped: the mod
+     * changes single blocks at a time, and a handful of remembered spots is
+     * plenty for revisits, related events, and Echoes at familiar places.
+     */
+    private final List<AnomalyLocation> anomalyLocations = new ArrayList<>();
+
+    /** Hard cap on remembered locations. Oldest is dropped when full. */
+    public static final int MAX_ANOMALY_LOCATIONS = 128;
+
+    // ----------------------------------------------------- anomaly locations
+
+    /** Remembers that an anomaly happened at a place. Drops the oldest when full. */
+    public void recordAnomaly(AnomalyLocation location) {
+        if (location == null) {
+            return;
+        }
+        while (this.anomalyLocations.size() >= MAX_ANOMALY_LOCATIONS) {
+            this.anomalyLocations.remove(0);
+        }
+        this.anomalyLocations.add(location);
+        markDirty();
+    }
+
+    /**
+     * The remembered anomaly nearest to a position in the same dimension, within
+     * the given radius, or null. Bounded: at most {@link #MAX_ANOMALY_LOCATIONS}
+     * squared-distance comparisons, no world reads.
+     */
+    public AnomalyLocation anomalyNear(String dimension, BlockPos pos, double radius) {
+        double best = radius * radius;
+        AnomalyLocation found = null;
+        for (AnomalyLocation location : this.anomalyLocations) {
+            if (!location.dimension.equals(dimension)) {
+                continue;
+            }
+            double distance = PositionUtil.distanceSquared(location.position(), pos);
+            if (distance <= best) {
+                best = distance;
+                found = location;
+            }
+        }
+        return found;
+    }
+
+    public int anomalyLocationCount() {
+        return this.anomalyLocations.size();
+    }
+
+    public Iterable<AnomalyLocation> anomalyLocations() {
+        return this.anomalyLocations;
+    }
 
     // --------------------------------------------------------- player state
 
@@ -364,6 +421,12 @@ public final class UncannyWorldState extends PersistentState {
         nbt.putBoolean("observation_closed", this.observationClosed);
         nbt.putLong("started_at", this.startedAtTick);
 
+        net.minecraft.nbt.NbtList locations = new net.minecraft.nbt.NbtList();
+        for (AnomalyLocation location : this.anomalyLocations) {
+            locations.add(location.toNbt());
+        }
+        nbt.put("anomaly_locations", locations);
+
         NbtCompound playerNbt = new NbtCompound();
         for (Map.Entry<UUID, UncannyPlayerData> entry : this.players.entrySet()) {
             playerNbt.put(entry.getKey().toString(), entry.getValue().toNbt());
@@ -417,6 +480,14 @@ public final class UncannyWorldState extends PersistentState {
         state.partitionBuilt = NbtUtil.readBool(nbt, "partition_built", false);
         state.observationClosed = NbtUtil.readBool(nbt, "observation_closed", false);
         state.startedAtTick = NbtUtil.readLong(nbt, "started_at", 0);
+
+        if (nbt.contains("anomaly_locations", net.minecraft.nbt.NbtElement.LIST_TYPE)) {
+            net.minecraft.nbt.NbtList locations = nbt.getList("anomaly_locations",
+                    net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
+            for (int i = 0; i < locations.size() && i < MAX_ANOMALY_LOCATIONS; i++) {
+                state.anomalyLocations.add(AnomalyLocation.fromNbt(locations.getCompound(i)));
+            }
+        }
 
         NbtCompound players = NbtUtil.child(nbt, "players");
         for (String key : players.getKeys()) {

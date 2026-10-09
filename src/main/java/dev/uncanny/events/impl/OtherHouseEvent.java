@@ -30,6 +30,7 @@ public class OtherHouseEvent extends UncannyEvent {
 
     public OtherHouseEvent() {
         super("other_house", Severity.MAJOR);
+        family(Family.ARCHITECTURAL);
         when(EventCondition.and(
                 EventCondition.overworld(),
                 EventCondition.playedMinutes(50),
